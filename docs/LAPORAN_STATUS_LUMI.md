@@ -104,8 +104,10 @@ Semua bahaya dari simulator disebut **indikasi**, bukan kejadian bencana yang su
 ### 3.6 Autentikasi, akses, dan keamanan dasar
 
 - Login memakai session cookie opaque yang dikelola server, bukan token yang disimpan di local storage.
-- Password demo dibaca dari environment `LUMI_DEMO_PASSWORD_*`, diproses dengan
-  hash `scrypt`, dan tidak pernah dikembalikan bersama token session.
+- Lima akun Supabase Auth lokal menggunakan satu `DEMO_PASSWORD` yang dibuat
+  secara kriptografis oleh `pnpm setup:local-env` dan tidak pernah dicetak.
+- Fixture API lama sementara menerima variabel kompatibilitas yang dibuat dari
+  secret yang sama sampai adapter persisten dikerjakan pada Stage 2.
 - Peran ditentukan dari identitas server, bukan dari role yang dikirim browser.
 - Mutasi API memeriksa origin operasional yang diizinkan.
 - Portal publik hanya membaca data berstatus `PUBLISHED`.
@@ -114,9 +116,8 @@ Semua bahaya dari simulator disebut **indikasi**, bukan kejadian bencana yang su
 
 ### 3.7 Akun demo lokal
 
-Tujuh akun lokal menggunakan password dari environment role masing-masing.
-Password warga dan simulator dapat diatur terpisah; jika tidak diatur, runtime
-menggunakan `LUMI_DEMO_PASSWORD_DLH`. Nilainya tidak dilacak Git.
+Lima akun lokal menggunakan satu password dari environment `DEMO_PASSWORD`.
+Nilainya hanya berada di `.env.local` yang diabaikan Git dan bermode `0600`.
 
 | Jenis akun | Email | Jabatan demo |
 | --- | --- | --- |
@@ -125,8 +126,6 @@ menggunakan `LUMI_DEMO_PASSWORD_DLH`. Nilainya tidak dilacak Git.
 | Diskominfo | `approver.diskominfo@demo.lumi.id` | Approver Informasi Publik |
 | Admin Simulator | `simulator@demo.lumi.id` | Administrator Simulation Center |
 | Warga | `amelia.warga@demo.lumi.id` | Warga demo |
-| Warga | `joko.warga@demo.lumi.id` | Warga demo |
-| Warga | `nadia.warga@demo.lumi.id` | Warga demo |
 
 Kredensial ini hanya untuk walkthrough lokal. Kredensial tersebut wajib diganti dan dikelola melalui environment variable sebelum deployment.
 
@@ -152,11 +151,10 @@ Instalasi awal:
 pnpm install
 ```
 
-Bangun dan aktifkan backend menggunakan environment variable lokal yang diperlukan
-(HMAC session serta `LUMI_DEMO_PASSWORD_DLH`, `LUMI_DEMO_PASSWORD_BPBD`, dan
-`LUMI_DEMO_PASSWORD_DISKOMINFO`), lalu jalankan tiga dev server web dengan build
-directory terpisah. Perintah yang relevan tersedia pada `package.json` dan
-`backend/government/README.md`.
+Jalankan `pnpm supabase:start`, `pnpm setup:local-env`, lalu `pnpm seed:demo`
+untuk menyiapkan database dan Auth lokal. Stage 1 belum mengganti fixture API;
+perintah dev server yang sudah ada tetap tersedia di `package.json` dan rincian
+backend ada di `backend/government/README.md`.
 
 Setelah semua berjalan, buka:
 

@@ -1,5 +1,6 @@
--- Apply only through the protected Supabase migration workflow after credentials
--- are injected outside this repository. The Supabase Data API remains disabled.
+-- DEPRECATED, UNAPPLIED P0 PROTOTYPE. DO NOT APPLY.
+-- The authoritative Stage 1 schema lives under /supabase/migrations.
+-- Retained temporarily only as historical input for the Stage 2 adapter.
 begin;
 
 create schema if not exists lumi;

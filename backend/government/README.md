@@ -33,19 +33,31 @@ evidence referenced by an older decision, audit record, or approved notice.
 
 ```sh
 pnpm install
+pnpm supabase:start
+pnpm setup:local-env
+pnpm seed:demo
+pnpm start:government:local
+pnpm supabase:test
+pnpm supabase:advisors
 pnpm --filter @lumi/contracts run build
 pnpm --filter @lumi/government run build
 pnpm --filter @lumi/government test
 ```
 
-The current fixture server requires `LUMI_SESSION_HMAC_KEY` plus
-`LUMI_DEMO_PASSWORD_DLH`, `LUMI_DEMO_PASSWORD_BPBD`, and
-`LUMI_DEMO_PASSWORD_DISKOMINFO`. Supply them through the shell or a local
-untracked environment loader; no password value is committed:
+Use `pnpm supabase:stop` to stop the local Docker services without deleting the
+local database. `pnpm supabase:reset` is intentionally local-only and should be
+used only when replaying the committed migrations is desired.
+
+Run `pnpm setup:local-env` after starting local Supabase. It generates the one
+`DEMO_PASSWORD`, `LUMI_SESSION_HMAC_KEY`, local Supabase keys, and temporary
+role-specific compatibility variables in an ignored mode-0600 `.env.local`.
+The compatibility variables preserve the fixture server until Stage 2; no
+password value is committed or printed. Start that fixture server from the
+repository root with `pnpm start:government:local`; its Node process explicitly
+loads the ignored `.env.local` through `--env-file`:
 
 ```sh
-pnpm --filter @lumi/government run build
-pnpm --filter @lumi/government start
+pnpm start:government:local
 ```
 
 All mutation requests require an `Origin` exactly matching `LUMI_OPS_ORIGIN`,
@@ -57,26 +69,18 @@ that local reverse proxy.
 ## Demo login untuk walkthrough lokal
 
 Portal warga tetap tidak memerlukan akun: ia publik dan hanya membaca informasi
-yang sudah berstatus `PUBLISHED`. Tujuh identitas di bawah disiapkan untuk demo
-lokal; tiga akun warga tidak dapat membuka API operasional. Akun simulator
-dipisahkan dari tiga instansi agar hasil SIMULASI tidak bercampur dengan data
-live. Jangan gunakan pada deployment, jangan masukkan ke log, dan ganti semua
-nilai environment pada deployment nyata.
+yang sudah berstatus `PUBLISHED`. Lima identitas di bawah disiapkan untuk demo
+lokal. Akun simulator dipisahkan dari tiga instansi agar hasil SIMULASI tidak
+bercampur dengan data resmi. Semua menggunakan secret lokal `DEMO_PASSWORD`.
+Jangan gunakan akun demo pada deployment atau memasukkan nilainya ke log.
 
 | Peran server | Email | Jabatan yang ditampilkan | Password lokal |
 | --- | --- | --- | --- |
-| `DLH` | `operator.dlh@demo.lumi.id` | Operator & Validator Kualitas Udara | `LUMI_DEMO_PASSWORD_DLH` |
-| `BPBD` | `koordinator.bpbd@demo.lumi.id` | Koordinator Respons Risiko | `LUMI_DEMO_PASSWORD_BPBD` |
-| `DISKOMINFO` | `approver.diskominfo@demo.lumi.id` | Approver Informasi Publik | `LUMI_DEMO_PASSWORD_DISKOMINFO` |
-| `ADMIN_DEMO` | `simulator@demo.lumi.id` | Administrator Simulation Center | `LUMI_DEMO_PASSWORD_ADMIN` atau fallback DLH |
-| `CITIZEN` | `amelia.warga@demo.lumi.id` | Warga demo | `LUMI_DEMO_PASSWORD_CITIZEN` atau fallback DLH |
-| `CITIZEN` | `joko.warga@demo.lumi.id` | Warga demo | `LUMI_DEMO_PASSWORD_CITIZEN` atau fallback DLH |
-| `CITIZEN` | `nadia.warga@demo.lumi.id` | Warga demo | `LUMI_DEMO_PASSWORD_CITIZEN` atau fallback DLH |
-
-`LUMI_DEMO_PASSWORD_CITIZEN` dan `LUMI_DEMO_PASSWORD_ADMIN` bersifat opsional;
-jika tidak diatur, runtime menggunakan `LUMI_DEMO_PASSWORD_DLH`. Sistem
-menyimpan hash `scrypt`, bukan password plaintext, dan tidak pernah
-mengembalikan password atau session token dalam JSON.
+| `DLH` | `operator.dlh@demo.lumi.id` | Operator & Validator Kualitas Udara | `DEMO_PASSWORD` |
+| `BPBD` | `koordinator.bpbd@demo.lumi.id` | Koordinator Respons Risiko | `DEMO_PASSWORD` |
+| `DISKOMINFO` | `approver.diskominfo@demo.lumi.id` | Approver Informasi Publik | `DEMO_PASSWORD` |
+| `ADMIN_DEMO` | `simulator@demo.lumi.id` | Administrator Simulation Center | `DEMO_PASSWORD` |
+| `CITIZEN` | `amelia.warga@demo.lumi.id` | Warga demo | `DEMO_PASSWORD` |
 
 ## Kontrak autentikasi untuk frontend
 
@@ -91,9 +95,7 @@ menaruh token di local storage. `POST /api/ops/logout` menghapus sesi.
 
 ## Supabase boundary
 
-`migrations/0001_government_core.sql` targets the existing Supabase PostgreSQL
-project, but is intentionally not applied by P0. It records the decision bound
-to each public notice so a live refresh cannot rewrite an approved public tier.
-Apply it only through the approved migration workflow after a TLS database
-connection is injected outside the repository. Keep Supabase Data API disabled
-and do not add a local PostgreSQL Docker service.
+The authoritative schema is versioned in root `supabase/migrations`. The old
+`migrations/0001_government_core.sql` is an unapplied P0 prototype and must not
+be applied. Stage 1 uses only the local Supabase Docker stack; it does not link,
+push to, reset, or otherwise modify a managed project.

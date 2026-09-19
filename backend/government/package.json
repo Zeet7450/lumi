@@ -8,9 +8,11 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "test": "pnpm run build && node --test dist/tests/*.test.js",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "start:local": "node --env-file=../../.env.local dist/server.js"
   },
   "dependencies": {
-    "@lumi/contracts": "file:../../packages/contracts"
+    "@lumi/contracts": "file:../../packages/contracts",
+    "@supabase/supabase-js": "2.116.0"
   }
 }
