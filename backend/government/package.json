@@ -1,0 +1,16 @@
+{
+  "name": "@lumi/government",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "pnpm run build && node --test dist/tests/*.test.js",
+    "start": "node dist/server.js"
+  },
+  "dependencies": {
+    "@lumi/contracts": "file:../../packages/contracts"
+  }
+}

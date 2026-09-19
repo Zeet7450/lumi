@@ -1,0 +1,21 @@
+{
+  "name": "lumi",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "build:ops": "LUMI_ENTRY=ops LUMI_DIST_DIR=.next-ops pnpm --filter @lumi/web build",
+    "build:warga": "LUMI_ENTRY=warga LUMI_DIST_DIR=.next-warga pnpm --filter @lumi/web build",
+    "build:simulator": "LUMI_ENTRY=simulator LUMI_DIST_DIR=.next-simulator pnpm --filter @lumi/web build",
+    "start:ops": "LUMI_ENTRY=ops LUMI_DIST_DIR=.next-ops pnpm --filter @lumi/web start --port 3000",
+    "start:warga": "LUMI_ENTRY=warga LUMI_DIST_DIR=.next-warga pnpm --filter @lumi/web start --port 3001",
+    "start:simulator": "LUMI_ENTRY=simulator LUMI_DIST_DIR=.next-simulator pnpm --filter @lumi/web start --port 3002",
+    "build": "pnpm --filter @lumi/contracts build && pnpm --filter @lumi/government build && pnpm --filter @lumi/web build",
+    "typecheck": "pnpm --filter @lumi/contracts build && pnpm --filter @lumi/government build && pnpm --filter @lumi/web lint",
+    "test": "pnpm --filter @lumi/contracts test && pnpm --filter @lumi/government test",
+    "lint": "pnpm run typecheck"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.8.0"
+  }
+}

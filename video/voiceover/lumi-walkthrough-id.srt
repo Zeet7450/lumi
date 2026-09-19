@@ -1,0 +1,80 @@
+1
+00:00:00,000 --> 00:00:15,000
+Ketika kualitas udara memburuk, warga membutuhkan arahan yang mudah dipahami.
+Petugas juga membutuhkan satu gambaran risiko yang jelas. Inilah LUMI, layanan kesiapsiagaan kualitas udara untuk Indonesia.
+
+2
+00:00:15,000 --> 00:00:30,000
+LUMI menyatukan informasi yang sebelumnya tersebar, lalu menerjemahkannya menjadi tindakan yang relevan untuk warga dan petugas.
+
+3
+00:00:30,000 --> 00:00:45,000
+Di portal warga, kita langsung melihat kondisi PM dua koma lima, kategori ISPU, cuaca, serta arah angin. Empat informasi inti ini menjadi fokus MVP.
+
+4
+00:00:45,000 --> 00:01:00,000
+Tidak berhenti pada angka, LUMI menjelaskan artinya. Misalnya, kurangi aktivitas luar ruang yang berat, tutup jendela bila asap masuk, dan gunakan masker yang sesuai saat perlu keluar.
+
+5
+00:01:00,000 --> 00:01:15,000
+Petunjuk dibuat lebih spesifik untuk anak-anak, lansia, ibu hamil, dan warga dengan gangguan pernapasan. Bahasa tetap sederhana agar dapat digunakan lintas usia.
+
+6
+00:01:15,000 --> 00:01:30,000
+Sekarang kita masuk ke simulasi. Semua layar ini diberi label simulasi dan terpisah dari data publik. Petugas memasukkan contoh kenaikan partikel dan arah angin.
+
+7
+00:01:30,000 --> 00:01:45,000
+LUMI tidak menyatakan adanya kebakaran. Jika tersedia, hotspot dibaca sebagai indikasi anomali panas. Sistem hanya membantu menyusun prioritas: pantau, verifikasi, atau respons tinggi.
+
+8
+00:01:45,000 --> 00:02:00,000
+Keputusan dapat dijelaskan. Kenaikan PM dua koma lima, kondisi angin, dampak wilayah, dan kelompok rentan ditampilkan sebagai alasan yang bisa diperiksa petugas.
+
+9
+00:02:00,000 --> 00:02:15,000
+Di dashboard pemerintah, antrian insiden memberi gambaran yang sama bagi Dinas Lingkungan Hidup, BPBD, dan Diskominfo. Tidak perlu lagi membuka ringkasan data secara manual satu per satu.
+
+10
+00:02:15,000 --> 00:02:30,000
+Petugas DLH dapat melihat wilayah terdampak, bukti data, serta perubahan kondisi. LUMI membantu mempercepat pemahaman, tetapi verifikasi lapangan dan keputusan operasional tetap dilakukan oleh instansi berwenang.
+
+11
+00:02:30,000 --> 00:02:45,000
+Saat risiko meningkat, BPBD berperan sebagai koordinator. LUMI menyiapkan rekomendasi awal, seperti memverifikasi kondisi di lokasi, menyiapkan posko informasi, atau menilai kebutuhan perlindungan kelompok rentan.
+
+12
+00:02:45,000 --> 00:03:00,000
+Mari lihat satu simulasi lagi. Skenario uji tidak dapat dipublikasikan sebagai informasi nyata. Pemisahan ini penting supaya warga tidak menerima peringatan palsu.
+
+13
+00:03:00,000 --> 00:03:15,000
+Dari data yang sudah ditinjau, petugas dapat membuat action brief: apa yang terjadi, wilayah yang perlu diperhatikan, alasan prioritas, dan langkah koordinasi yang disarankan.
+
+14
+00:03:15,000 --> 00:03:30,000
+DLH menyiapkan konteks kualitas udara. BPBD mengoordinasikan respons ketika risiko meningkat. Diskominfo meninjau pesan publik sebelum diterbitkan. Masing-masing peran tetap jelas dan dapat dilacak.
+
+15
+00:03:30,000 --> 00:03:45,000
+Kembali ke portal warga. Tampilan tersedia untuk desktop dan mobile, termasuk mode gelap yang lebih nyaman pada malam hari. Informasi utama tetap terlihat besar dan mudah dibaca.
+
+16
+00:03:45,000 --> 00:04:00,000
+Ketika kondisi memburuk, warga tidak hanya menerima label buruk. Mereka melihat langkah yang sesuai kondisi: kurangi paparan, pantau gejala, ikuti arahan resmi, dan bantu anggota keluarga yang rentan.
+
+17
+00:04:00,000 --> 00:04:15,000
+Pesan resmi hanya muncul setelah melalui alur persetujuan. Pada MVP, warga melihatnya di web app. Nomor telepon tetap dicatat dengan aman sebagai kesiapan integrasi kanal resmi pada tahap berikutnya.
+
+18
+00:04:15,000 --> 00:04:30,000
+Pada sisi pemerintah, draf pesan dapat diperiksa ulang sebelum tayang. Petugas dapat memastikan wilayah, waktu, tingkat risiko, dan instruksi publik sudah sesuai kondisi terbaru.
+
+19
+00:04:30,000 --> 00:04:45,000
+Setelah disetujui, pesan tampil di portal warga sebagai informasi resmi. LUMI tidak menggantikan keputusan instansi. LUMI menjaga agar keputusan dan pesan sampai lebih cepat, jelas, dan konsisten.
+
+20
+00:04:45,000 --> 00:05:00,000
+LUMI dimulai dari hal yang paling penting: PM dua koma lima, ISPU, cuaca, arah angin, dan alur kerja yang transparan. Dari pemantauan menuju tindakan yang lebih tenang, terarah, dan berpihak pada warga.

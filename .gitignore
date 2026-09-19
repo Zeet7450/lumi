@@ -1,0 +1,46 @@
+# Dependencies and generated application output
+node_modules/
+dist/
+.next*/
+coverage/
+*.tsbuildinfo
+
+# Local planning, scratch, and generated artifacts
+.superpowers/
+tmp/
+output/
+__pycache__/
+*.py[cod]
+package-lock.json
+video/*.mp4
+video/public/
+
+# Local Supabase state
+supabase/.temp/
+
+# Local environment and credentials (retain safe templates)
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Browser test artifacts
+playwright-report/
+test-results/
+blob-report/
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS and editor artifacts
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
