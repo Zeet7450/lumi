@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "test": "node --experimental-strip-types --test src/lib/demo-scenario.test.ts src/lib/demo-access.test.ts"
   },
   "dependencies": {
     "driver.js": "^1.3.5",

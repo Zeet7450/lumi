@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "scripts": {
+    "dev": "pnpm --filter @lumi/web dev --hostname 127.0.0.1",
     "supabase:start": "supabase start",
     "supabase:status": "supabase status",
     "supabase:stop": "supabase stop",
@@ -21,7 +22,7 @@
     "start:simulator": "LUMI_ENTRY=simulator LUMI_DIST_DIR=.next-simulator pnpm --filter @lumi/web start --port 3002",
     "build": "pnpm --filter @lumi/contracts build && pnpm --filter @lumi/government build && pnpm --filter @lumi/web build",
     "typecheck": "pnpm --filter @lumi/contracts build && pnpm --filter @lumi/government build && pnpm --filter @lumi/web lint",
-    "test": "node --test scripts/supabase-config.test.mjs && pnpm --filter @lumi/contracts test && pnpm --filter @lumi/government test",
+    "test": "node --test scripts/supabase-config.test.mjs && pnpm --filter @lumi/contracts test && pnpm --filter @lumi/government test && pnpm --filter @lumi/web test",
     "lint": "pnpm run typecheck"
   },
   "devDependencies": {

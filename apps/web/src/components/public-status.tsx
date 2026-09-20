@@ -1,31 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { formatTime, freshnessLabel, getPublicRegion, tierLabel, type PublicProjection } from "@/lib/lumi";
+import { useDemoScenario } from "./demo-scenario-store";
 
-function tierClass(tier: PublicProjection["notice"]["tier"]) { return tier === "HIGH_RESPONSE" ? "tier-high" : tier === "VERIFY" ? "tier-verify" : "tier-monitor"; }
-
-export function PublicStatus({ slug = "pontianak", details = false }: { slug?: string; details?: boolean }) {
-  const [result, setResult] = useState<{ projection: PublicProjection | null; preview: boolean }>();
-  useEffect(() => { void getPublicRegion(slug).then(setResult); }, [slug]);
-  if (!result) return <section className="status-hero" aria-busy="true"><p className="eyebrow">Memuat pembaruan resmi</p><h1>Menyiapkan informasi wilayah…</h1></section>;
-  if (!result.projection) return <section className="status-hero"><p className="eyebrow">Informasi wilayah</p><h1>Belum ada pembaruan yang disetujui</h1><p className="notice">Pantau informasi resmi terbaru dari pemerintah daerah.</p></section>;
-  const { region, notice } = result.projection;
-  return <>
-    {result.preview && <p className="preview">Sambungan data belum tersedia. Silakan periksa kembali beberapa saat lagi.</p>}
-    <section className="status-hero">
-      <p className="eyebrow">Status udara resmi · {region.province}</p>
-      <h1>{region.name}</h1>
-      <span className={`badge ${tierClass(notice.tier)}`}>● {tierLabel(notice.tier)}</span>
-      <p className="notice">{notice.text}</p>
-      <div className="data-grid" aria-label="Ringkasan pembaruan">
-        <div className="data-point"><span className="muted">Status data</span><strong>{freshnessLabel(notice.currentFreshness)}</strong></div>
-        <div className="data-point"><span className="muted">Diamati</span><strong>{formatTime(notice.dataObservedAt)}</strong></div>
-        <div className="data-point"><span className="muted">Diterbitkan</span><strong>{formatTime(notice.publishedAt)}</strong></div>
-      </div>
-      <p className="freshness">Sumber: {notice.sources.join(", ") || "Belum tersedia"}</p>
-      {!details && <Link className="button" href={`/wilayah/${region.slug}`}>Baca panduan untuk wilayah ini</Link>}
-    </section>
-  </>;
+export function PublicStatus({ details = false }: { slug?: string; details?: boolean }) {
+  const { publicNotice, role } = useDemoScenario();
+  if (role !== "WARGA") return <section className="status-hero"><p className="eyebrow">Portal Warga · proyeksi publik</p><h1>Pilih peran Warga untuk melihat portal publik</h1><p className="notice">Mode ini tidak menampilkan draf, bukti internal, atau tindakan operasional.</p></section>;
+  if (!publicNotice) return <section className="status-hero"><p className="eyebrow">Informasi warga · data sintetis</p><h1>Belum ada informasi yang disetujui</h1><p className="notice">Warga hanya melihat pemberitahuan setelah approver manusia menerbitkannya.</p><p className="freshness">Draf dan pekerjaan internal tidak tersedia di portal ini.</p></section>;
+  const { region, notice } = publicNotice;
+  return <section className="status-hero"><p className="eyebrow">Informasi warga · {region.province}</p><h1>{region.name}</h1><span className="badge tier-high">Informasi disetujui</span><p className="notice">{notice.text}</p><div className="data-grid" aria-label="Ringkasan informasi warga"><div className="data-point"><span className="muted">AQI data uji</span><strong>{notice.aqi}</strong></div><div className="data-point"><span className="muted">PM2.5 data uji</span><strong>{notice.pm25} µg/m³</strong></div><div className="data-point"><span className="muted">Diterbitkan</span><strong>{new Intl.DateTimeFormat("id-ID", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Jakarta" }).format(new Date(notice.publishedAt))} WIB</strong></div></div><p className="freshness">Hanya informasi yang sudah disetujui ditampilkan. Tidak ada data mentah atau operasi internal.</p>{!details && <Link className="button" href={`/wilayah/${region.slug}`}>Baca informasi wilayah</Link>}</section>;
 }

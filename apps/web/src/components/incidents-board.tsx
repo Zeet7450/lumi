@@ -1,15 +1,24 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { freshnessLabel, getIncidents, tierLabel, type IncidentSummary } from "@/lib/lumi";
-
-function tierClass(tier: IncidentSummary["tier"]) { return tier === "HIGH_RESPONSE" ? "tier-high" : tier === "VERIFY" ? "tier-verify" : "tier-monitor"; }
+import { useState } from "react";
+import { useDemoScenario } from "./demo-scenario-store";
+import { DemoScenarioMap } from "./demo-scenario-map";
 
 export function IncidentsBoard() {
-  const [result, setResult] = useState<{ incidents: IncidentSummary[]; preview: boolean }>();
-  const [filter, setFilter] = useState<"ALL" | IncidentSummary["tier"]>("ALL");
-  useEffect(() => { void getIncidents().then(setResult); }, []);
-  if (!result) return <p aria-busy="true">Memuat antrean insiden…</p>;
-  const incidents = result.incidents.filter((incident) => filter === "ALL" || incident.tier === filter);
-  return <><div className="ops-header"><div><p className="eyebrow">Pusat kendali</p><h1>Antrean keputusan</h1><p className="muted">Urutan dibuat dari aturan prioritas. Petugas tidak mengubah tier secara manual.</p></div><label className="field" style={{ minWidth: 170 }}>Filter tier<select value={filter} onChange={(event) => setFilter(event.target.value as typeof filter)}><option value="ALL">Semua tier</option><option value="HIGH_RESPONSE">Respons Tinggi</option><option value="VERIFY">Verifikasi</option><option value="MONITOR">Pantau</option></select></label></div>{result.preview && <p className="preview">Sambungan data belum tersedia.</p>}<div className="cards" data-tour="priority">{incidents.map((incident, index) => <article className="incident" key={incident.id}><div className="incident-head"><div><p className="eyebrow">Prioritas {String(index + 1).padStart(2, "0")}</p><h2>{incident.region.name}, {incident.region.province}</h2></div><span className={`badge ${tierClass(incident.tier)}`}>● {tierLabel(incident.tier)}</span></div><p data-tour={index === 0 ? "reason" : undefined}>{incident.rationale.join(" · ")}</p><div className="meta"><span>{freshnessLabel(incident.freshness)}</span><span>Status kerja: {incident.workflowStatus === "OPEN" ? "Terbuka" : "Selesai"}</span></div></article>)}</div></>;
+  const { scenario, role, run } = useDemoScenario();
+  const [error, setError] = useState("");
+  const perform = (type: "VALIDATE_ENVIRONMENT" | "VERIFY_INCIDENT" | "RECORD_RESPONSE") => {
+    try { setError(""); run({ type }); }
+    catch (reason) { setError(reason instanceof Error ? reason.message : "Tindakan demo tidak dapat dijalankan."); }
+  };
+  const readyForDlh = scenario.workflow === "ENVIRONMENT_PENDING";
+  const readyForVerify = scenario.workflow === "ENVIRONMENT_VALIDATED";
+  const readyForResponse = scenario.workflow === "INCIDENT_VERIFIED";
+  return <section className="workflow-board">
+    <header className="ops-header"><div><p className="eyebrow">Antrean keputusan · {scenario.region.province}</p><h1>Insiden kebakaran lahan sintetis</h1><p className="muted">DLH memvalidasi kondisi lingkungan. BPBD memverifikasi insiden dan mengelola tindakan respons.</p></div><span className="badge tier-verify">{scenario.workflow.replaceAll("_", " ")}</span></header>
+    <DemoScenarioMap surface="OPERATIONS" />
+    {!scenario.observation ? <div className="workflow-empty"><strong>Menunggu Simulator</strong><span>Buka Simulation Center dan jalankan skenario data uji terlebih dahulu.</span></div> : <div className="workflow-columns"><article className="workflow-role-card"><p className="eyebrow">Ruang DLH</p><h2>Validasi lingkungan</h2><dl><div><dt>AQI</dt><dd>{scenario.observation.aqi}</dd></div><div><dt>PM2.5</dt><dd>{scenario.observation.pm25} µg/m³</dd></div><div><dt>Angin</dt><dd>{scenario.observation.wind}</dd></div></dl>{scenario.environmentalValidation ? <p className="role-done">✓ DLH telah memvalidasi data uji.</p> : <button className="button" type="button" disabled={role !== "DLH" || !readyForDlh} onClick={() => perform("VALIDATE_ENVIRONMENT")}>Validasi dampak lingkungan</button>}{role !== "DLH" && readyForDlh ? <small>Pilih peran DLH untuk melanjutkan tahap ini.</small> : null}</article>
+      <article className="workflow-role-card"><p className="eyebrow">Ruang BPBD</p><h2>Verifikasi & respons</h2>{scenario.incident ? <p className="role-done">✓ Insiden sintetis telah diverifikasi BPBD.</p> : <button className="button" type="button" disabled={role !== "BPBD" || !readyForVerify} onClick={() => perform("VERIFY_INCIDENT")}>Verifikasi insiden</button>}{scenario.response ? <p className="role-done">✓ Tindakan respons telah dicatat.</p> : <button className="button secondary" type="button" disabled={role !== "BPBD" || !readyForResponse} onClick={() => perform("RECORD_RESPONSE")}>Catat tindakan respons</button>}{role !== "BPBD" && (readyForVerify || readyForResponse) ? <small>Hanya BPBD yang dapat memverifikasi insiden dan mencatat respons.</small> : null}</article></div>}
+    {error && <p className="error" role="alert">{error}</p>}
+  </section>;
 }
