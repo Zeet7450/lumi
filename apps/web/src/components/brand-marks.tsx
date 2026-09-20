@@ -7,18 +7,10 @@ import type { SVGProps } from "react";
  */
 export function LumiMark(props: SVGProps<SVGSVGElement>) {
   return <svg viewBox="0 0 48 48" fill="none" {...props}>
-    <defs>
-      <linearGradient id="lumi-aurora" x1="8" y1="6" x2="42" y2="43" gradientUnits="userSpaceOnUse">
-        <stop stopColor="#A5B4FC" /><stop offset=".46" stopColor="#5367E8" /><stop offset="1" stopColor="#12235A" />
-      </linearGradient>
-      <linearGradient id="lumi-wind" x1="13" y1="14" x2="35" y2="35" gradientUnits="userSpaceOnUse">
-        <stop stopColor="#FFF" /><stop offset="1" stopColor="#D8E7FF" />
-      </linearGradient>
-    </defs>
-    <circle cx="24" cy="24" r="22" fill="url(#lumi-aurora)" />
-    <path d="M12 22.6c3.6-6.7 13.4-10 21.4-6.5 2.7 1.2 4.1 3.8 1.8 5.5-3.6 2.8-12.2-1.8-17.4 2.8-2.8 2.5-.8 6.5 3.9 7.1 5.1.7 10.6-1.2 13.7-4.9" stroke="url(#lumi-wind)" strokeWidth="3.5" strokeLinecap="round" />
-    <path d="M15.2 29.9c4.1 5.5 13.3 6.5 19.2 2.1" stroke="#8FE5D0" strokeWidth="2.5" strokeLinecap="round" />
-    <circle cx="33.1" cy="12.9" r="2.1" fill="#8FE5D0" />
+    <circle cx="24" cy="24" r="22" fill="#1E3A5F" />
+    <path d="M12 22.6c3.6-6.7 13.4-10 21.4-6.5 2.7 1.2 4.1 3.8 1.8 5.5-3.6 2.8-12.2-1.8-17.4 2.8-2.8 2.5-.8 6.5 3.9 7.1 5.1.7 10.6-1.2 13.7-4.9" stroke="#FFFFFF" strokeWidth="3.5" strokeLinecap="round" />
+    <path d="M15.2 29.9c4.1 5.5 13.3 6.5 19.2 2.1" stroke="#06B6D4" strokeWidth="2.5" strokeLinecap="round" />
+    <circle cx="33.1" cy="12.9" r="2.1" fill="#06B6D4" />
   </svg>;
 }
 

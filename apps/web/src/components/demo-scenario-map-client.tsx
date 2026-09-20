@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { Circle, CircleMarker, MapContainer, Polyline, Tooltip } from "react-leaflet";
-import { projectDemoMap, type DemoScenario } from "@/lib/demo-scenario";
+import { useEffect, useState } from "react";
+import { Circle, CircleMarker, MapContainer, Polyline, TileLayer, Tooltip, useMap } from "react-leaflet";
+import { projectDemoMap, type DemoMapProjection, type DemoScenario } from "@/lib/demo-scenario";
 
 type MapDetail = "fire" | "haze" | "wind";
 
@@ -12,6 +12,20 @@ const detailCopy: Record<MapDetail, { title: string; body: string }> = {
   wind: { title: "Arah angin", body: "Garis menunjukkan arah sebaran data uji dari titik api." }
 };
 
+function FitDemoBounds({ map }: { map: DemoMapProjection }) {
+  const leafletMap = useMap();
+  useEffect(() => {
+    const radiusInDegrees = map.hazeRadiusMeters / 111_320;
+    const longitudeRadius = radiusInDegrees / Math.cos(map.fire[0] * Math.PI / 180);
+    const padding = .025;
+    leafletMap.fitBounds([
+      [Math.min(map.fire[0] - radiusInDegrees, map.windEnd[0]) - padding, Math.min(map.fire[1] - longitudeRadius, map.windEnd[1]) - padding],
+      [Math.max(map.fire[0] + radiusInDegrees, map.windEnd[0]) + padding, Math.max(map.fire[1] + longitudeRadius, map.windEnd[1]) + padding]
+    ], { padding: [28, 28], maxZoom: 12, animate: false });
+  }, [leafletMap, map.fire, map.hazeRadiusMeters, map.windEnd]);
+  return null;
+}
+
 export default function DemoScenarioMapClient({ scenario, surface }: { scenario: DemoScenario; surface: "SIMULATOR" | "OPERATIONS" }) {
   const map = projectDemoMap(scenario);
   const [detail, setDetail] = useState<MapDetail>("fire");
@@ -20,7 +34,9 @@ export default function DemoScenarioMapClient({ scenario, surface }: { scenario:
   return <section className={`demo-scenario-map ${surface === "SIMULATOR" ? "is-simulator" : ""}`} aria-labelledby={`${surface.toLowerCase()}-map-title`}>
     <header className="demo-map-head"><div><p className="eyebrow">Peta skenario · Kalimantan Barat</p><h2 id={`${surface.toLowerCase()}-map-title`}>Titik api, dampak asap, dan angin</h2></div><span className="demo-map-state">{map.isActive ? "Skenario aktif" : "Template siap"}</span></header>
     <div className="demo-map-frame">
-      <MapContainer center={map.center} zoom={11} minZoom={9} maxZoom={14} zoomControl scrollWheelZoom className="demo-map-canvas" aria-label="Peta interaktif skenario kebakaran lahan sintetis">
+      <MapContainer center={map.center} zoom={10} minZoom={8} maxZoom={14} zoomControl scrollWheelZoom className="demo-map-canvas" aria-label="Peta interaktif skenario kebakaran lahan sintetis">
+        <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+        <FitDemoBounds map={map} />
         <Circle center={map.fire} radius={map.hazeRadiusMeters} pathOptions={{ color: "#d97706", fillColor: "#f59e0b", fillOpacity: hazeOpacity, weight: 1.5 }} eventHandlers={{ click: () => setDetail("haze") }}>
           <Tooltip sticky>Area dampak asap sintetis</Tooltip>
         </Circle>
@@ -32,6 +48,7 @@ export default function DemoScenarioMapClient({ scenario, surface }: { scenario:
           <Tooltip permanent direction="top" offset={[0, -12]}>Titik api · data uji</Tooltip>
         </CircleMarker>
       </MapContainer>
+      <span className="demo-map-disclaimer">Overlay data uji · bukan informasi kejadian resmi</span>
     </div>
     <div className="demo-map-legend" aria-label="Legenda peta"><span><i className="fire" />Titik api</span><span><i className="haze" />Dampak asap</span><span><i className="wind" />Arah angin</span></div>
     <button type="button" className="demo-map-detail" onClick={() => setDetail(detail === "fire" ? "haze" : detail === "haze" ? "wind" : "fire")} aria-label="Tampilkan detail objek peta berikutnya">
