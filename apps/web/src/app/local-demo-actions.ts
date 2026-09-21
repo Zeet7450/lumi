@@ -18,7 +18,8 @@ export async function loginLocalDemo(_: LoginState, formData: FormData): Promise
   const password = String(formData.get("password") ?? "");
   const account = localDemoAccounts[email as keyof typeof localDemoAccounts];
   const expectedPassword = process.env.DEMO_PASSWORD;
-  if (!account || !expectedPassword || !passwordsMatch(password, expectedPassword)) return { error: "Email atau kata sandi demo tidak sesuai." };
+  const isOpsLogin = process.env.LUMI_ENTRY === "ops";
+  if (!account || (isOpsLogin && account.role === "WARGA") || !expectedPassword || !passwordsMatch(password, expectedPassword)) return { error: "Email atau kata sandi demo tidak sesuai." };
   const cookieStore = await cookies();
   cookieStore.set(LOCAL_DEMO_COOKIE, account.role, { httpOnly: true, sameSite: "lax", path: "/", secure: process.env.NODE_ENV === "production", maxAge: 60 * 60 * 12 });
   return { error: "", destination: account.destination };
