@@ -1,12 +1,15 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { loginLocalDemo } from "@/app/local-demo-actions";
 
-const emptyLoginState = { error: "" };
+const emptyLoginState = { error: "" as string, destination: undefined as string | undefined };
 
 export function LocalDemoLogin() {
   const [state, action, pending] = useActionState(loginLocalDemo, emptyLoginState);
+  useEffect(() => {
+    if (state.destination) window.location.assign(state.destination);
+  }, [state.destination]);
   return <form className="local-demo-login" action={action}>
     <label>Email akun demo<input name="email" type="email" autoComplete="username" placeholder="nama@demo.lumi.id" required /></label>
     <label>Kata sandi demo<input name="password" type="password" autoComplete="current-password" required /></label>
