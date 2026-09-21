@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Circle, CircleMarker, MapContainer, Polyline, TileLayer, Tooltip, useMap } from "react-leaflet";
 import { projectDemoMap, type DemoMapProjection, type DemoScenario } from "@/lib/demo-scenario";
+import { demoReferencePoint } from "@/lib/demo-locations";
 
 type MapDetail = "fire" | "haze" | "wind";
 
@@ -37,9 +38,7 @@ export default function DemoScenarioMapClient({ scenario, surface }: { scenario:
       <MapContainer center={map.center} zoom={10} minZoom={8} maxZoom={14} zoomControl scrollWheelZoom className="demo-map-canvas" aria-label="Peta interaktif skenario kebakaran lahan sintetis">
         <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
         <FitDemoBounds map={map} />
-        <Circle center={map.fire} radius={map.hazeRadiusMeters} pathOptions={{ color: "#d97706", fillColor: "#f59e0b", fillOpacity: hazeOpacity, weight: 1.5 }} eventHandlers={{ click: () => setDetail("haze") }}>
-          <Tooltip sticky>Area dampak asap sintetis</Tooltip>
-        </Circle>
+        {scenario.simulation.sources.map((source) => { const point = demoReferencePoint(source.sourcePointId); return <Fragment key={source.id}><Circle center={point.coordinates} radius={source.radiusMeters} pathOptions={{ color: "#facc15", fillColor: "#fde68a", fillOpacity: map.isActive ? .13 : .05, weight: 1 }}><Tooltip sticky>Zona luar · {source.customName || (source.eventType === "HAZE" ? "Kabut asap" : "Kebakaran lahan")} · data uji</Tooltip></Circle><Circle center={point.coordinates} radius={source.radiusMeters * .62} pathOptions={{ color: "#f97316", fillColor: "#fb923c", fillOpacity: map.isActive ? .18 : .07, weight: 1 }} /><Circle center={point.coordinates} radius={source.radiusMeters * .3} pathOptions={{ color: "#dc2626", fillColor: "#ef4444", fillOpacity: map.isActive ? .25 : .1, weight: 1 }} /><CircleMarker center={point.coordinates} radius={10} pathOptions={{ color: "#ffffff", fillColor: "#b91c1c", fillOpacity: 1, weight: 3 }} eventHandlers={{ click: () => setDetail("fire") }}><Tooltip permanent direction="top" offset={[0, -12]}>Sumber {source.customName || "data uji"}</Tooltip></CircleMarker></Fragment>; })}
         <Polyline positions={[map.fire, map.windEnd]} pathOptions={{ color: "#0f766e", weight: 3, dashArray: "8 8" }} eventHandlers={{ click: () => setDetail("wind") }}>
           <Tooltip sticky>Angin {map.windLabel}</Tooltip>
         </Polyline>

@@ -6,6 +6,7 @@ import { applyDemoCommand, DEMO_ROLES, deserializeDemoScenario, initialDemoScena
 const storageKey = "lumi-product-demo-scenario-v1";
 const roleStorageKey = "lumi-product-demo-role-v1";
 const channelName = "lumi-product-demo-scenario";
+const bridgeUrl = "http://127.0.0.1:3100/state";
 
 type DemoScenarioContextValue = {
   scenario: DemoScenario;
@@ -61,6 +62,22 @@ export function DemoScenarioProvider({ children, sessionRole }: Readonly<{ child
     window.addEventListener("storage", onStorage);
     return () => { channel.current?.close(); channel.current = null; window.removeEventListener("storage", onStorage); };
   }, [sessionRole]);
+  useEffect(() => {
+    let disposed = false;
+    const pull = async () => {
+      try {
+        const response = await fetch(bridgeUrl, { cache: "no-store" });
+        const data: unknown = await response.json();
+        if (typeof data === "object" && data !== null && "scenario" in data) {
+          const next = deserializeDemoScenario(JSON.stringify((data as { scenario?: unknown }).scenario));
+          if (next && !disposed) { scenarioRef.current = next; setScenario(next); }
+        }
+      } catch { /* The standalone local demo remains usable while the bridge is starting. */ }
+    };
+    void pull();
+    const timer = window.setInterval(() => void pull(), 3_000);
+    return () => { disposed = true; window.clearInterval(timer); };
+  }, []);
   const commit = useCallback((next: DemoScenario) => {
     scenarioRef.current = next;
     setScenario(next);
@@ -68,6 +85,7 @@ export function DemoScenarioProvider({ children, sessionRole }: Readonly<{ child
     try { window.localStorage.setItem(storageKey, serialized); }
     catch { /* Keep the live demo usable when persistent browser storage is unavailable. */ }
     channel.current?.postMessage(serialized);
+    void fetch(bridgeUrl, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ synthetic: true, scenario: JSON.parse(serialized), notices: projectPublicDemoNotice(next) ? [projectPublicDemoNotice(next)] : [] }) }).catch(() => undefined);
   }, []);
   const run = useCallback((command: DemoCommandInput) => {
     const next = applyDemoCommand(scenarioRef.current, { ...command, actor: role } as DemoCommand);

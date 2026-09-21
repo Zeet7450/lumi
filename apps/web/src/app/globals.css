@@ -26,6 +26,19 @@
   --shadow-lg: 0 20px 50px rgba(15, 23, 42, .12);
 }
 
+/* Multi-source controls are deliberately compact so the map remains the simulator focal point. */
+.source-cards { display: grid; gap: 14px; margin-top: 18px; }
+.source-card { border: 1px solid var(--line); background: var(--surface); padding: 16px; border-radius: 10px; }
+.source-card > header, .source-card > footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.source-card > header span { color: var(--muted); font-size: .82rem; }
+.source-card footer { margin-top: 14px; justify-content: flex-start; flex-wrap: wrap; }
+.source-card small { display: block; color: var(--muted); margin-top: 4px; }
+.operational-map { display: flex; flex-direction: column; }
+.operational-map-grid { order: 2; display: block !important; }
+.operational-map-tools { order: 3; margin-top: 16px; }
+.operational-point-panel { margin-top: 16px; display: grid; grid-template-columns: minmax(260px, .7fr) minmax(0, 1.3fr); gap: 16px; }
+@media (max-width: 760px) { .operational-point-panel { grid-template-columns: 1fr; } .source-card { padding: 12px; } }
+
 :root[data-theme="dark"] {
   --canvas: #0b1223;
   --surface: #121c32;
