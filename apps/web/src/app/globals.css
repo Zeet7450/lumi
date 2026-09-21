@@ -557,7 +557,7 @@ input::placeholder { color: var(--placeholder); opacity: 1; }
 .operational-point-detail .eyebrow, .operational-point-detail h3, .operational-point-detail .muted, .operational-point-detail .freshness { margin: 0; }
 .operational-point-detail h3 { font-size: 1rem; line-height: 1.2; }
 .operational-point-detail .muted, .operational-point-detail .freshness { font-size: .75rem; }
-.operational-point-detail dl { display: grid; grid-template-columns: repeat(2, minmax(68px, auto)); gap: 8px; margin: 0; }
+.operational-point-detail dl { display: grid; grid-template-columns: repeat(4, minmax(68px, auto)); gap: 8px; margin: 0; }
 .operational-point-detail dl div { padding: 6px 8px; }
 .operational-point-detail dt { font-size: .65rem; }
 .operational-point-detail dd { font-size: .78rem; }
@@ -572,6 +572,11 @@ input::placeholder { color: var(--placeholder); opacity: 1; }
 .operational-point-list small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .7rem; }
 .operational-point-metrics { display: grid; justify-items: end; gap: 1px; text-align: right; }
 .operational-point-metrics b { color: var(--ink); font-size: .72rem; }
+.workflow-history { display: grid; gap: 12px; padding: 20px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.workflow-history > .eyebrow { margin: 0; }
+.workflow-history ol { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.workflow-history li { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-muted); }
+.workflow-history li span { color: var(--muted); font-size: .82rem; text-align: right; }
 
 @media (max-width: 900px) {
   .ops-layout, .ops-layout.is-sidebar-collapsed { grid-template-columns: 208px minmax(0, 1fr); }
@@ -594,5 +599,7 @@ input::placeholder { color: var(--placeholder); opacity: 1; }
   .operational-map-frame, .operational-map-canvas, .operational-map-canvas.leaflet-container { min-height: 310px; }
   .operational-point-panel { height: 420px; }
   .operational-point-detail { grid-template-columns: 1fr; }
-  .operational-point-detail dl { justify-content: start; }
+  .operational-point-detail dl { grid-template-columns: repeat(2, minmax(68px, auto)); justify-content: start; }
+  .workflow-history li { align-items: flex-start; flex-direction: column; gap: 4px; }
+  .workflow-history li span { text-align: left; }
 }
