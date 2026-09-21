@@ -12,6 +12,7 @@
     "supabase:test": "supabase test db --local",
     "supabase:advisors": "supabase db lint --local --schema public --level error --fail-on error",
     "setup:local-env": "node scripts/setup-local-env.mjs",
+    "demo:credentials": "node scripts/ensure-demo-password.mjs",
     "seed:demo": "pnpm --filter @lumi/government build && node backend/government/dist/scripts/seed-demo.js",
     "start:government:local": "pnpm --filter @lumi/government build && pnpm --filter @lumi/government start:local",
     "build:ops": "LUMI_ENTRY=ops LUMI_DIST_DIR=.next-ops pnpm --filter @lumi/web build",

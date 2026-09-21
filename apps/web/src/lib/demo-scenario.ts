@@ -1,3 +1,5 @@
+import { demoReferencePoint, isDemoReferencePointId } from "./demo-locations";
+
 export const DEMO_SCENARIO_VERSION = 1;
 
 export const DEMO_ROLES = ["SIMULATOR", "DLH", "BPBD", "APPROVER", "WARGA"] as const;
@@ -8,10 +10,13 @@ export type WorkflowStep = "READY" | "ENVIRONMENT_PENDING" | "ENVIRONMENT_VALIDA
 export const WIND_DIRECTIONS = ["Tenggara", "Selatan", "Barat Daya", "Barat"] as const;
 export const WIND_SPEEDS = [8, 18, 28] as const;
 export const FIRE_INTENSITIES = [1, 2, 3, 4, 5] as const;
+export const IMPACT_RADII = [5, 10, 15, 20] as const;
 export type WindDirection = (typeof WIND_DIRECTIONS)[number];
 export type WindSpeed = (typeof WIND_SPEEDS)[number];
 export type FireIntensity = (typeof FIRE_INTENSITIES)[number];
-export type ScenarioEventCommand = "CREATE_SCENARIO" | "PLAY_SIMULATION" | "PAUSE_SIMULATION" | "SET_WIND_DIRECTION" | "SET_WIND_SPEED" | "SET_FIRE_INTENSITY" | "VALIDATE_ENVIRONMENT" | "VERIFY_INCIDENT" | "RECORD_RESPONSE" | "PUBLISH_NOTICE";
+export type ImpactRadius = (typeof IMPACT_RADII)[number];
+export type FireHazeStatus = "FIRE" | "HAZE";
+export type ScenarioEventCommand = "CREATE_SCENARIO" | "PLAY_SIMULATION" | "PAUSE_SIMULATION" | "SET_WIND_DIRECTION" | "SET_WIND_SPEED" | "SET_FIRE_INTENSITY" | "SET_SOURCE_POINT" | "SET_FIRE_HAZE_STATUS" | "SET_IMPACT_RADIUS" | "SET_AQI" | "SET_PM25" | "VALIDATE_ENVIRONMENT" | "VERIFY_INCIDENT" | "RECORD_RESPONSE" | "PUBLISH_NOTICE";
 
 export type DemoScenarioEvent = {
   at: string;
@@ -22,6 +27,11 @@ export type DemoScenarioEvent = {
   windDirection?: WindDirection;
   windSpeed?: WindSpeed;
   fireIntensity?: FireIntensity;
+  sourcePointId?: string;
+  fireHazeStatus?: FireHazeStatus;
+  impactRadiusKm?: ImpactRadius;
+  aqi?: number;
+  pm25?: number;
 };
 
 export type DemoSimulation = {
@@ -29,6 +39,11 @@ export type DemoSimulation = {
   windDirection: WindDirection;
   windSpeed: WindSpeed;
   fireIntensity: FireIntensity;
+  sourcePointId: string;
+  fireHazeStatus: FireHazeStatus;
+  impactRadiusKm: ImpactRadius;
+  aqiOverride: number | null;
+  pm25Override: number | null;
 };
 
 export type DemoScenario = {
@@ -58,6 +73,7 @@ export type DemoMapProjection = {
   windEnd: [number, number];
   windLabel: string;
   fireIntensity: FireIntensity;
+  sourcePointId: string;
   isActive: boolean;
 };
 
@@ -68,6 +84,11 @@ export type DemoCommand =
   | { type: "SET_WIND_DIRECTION"; actor: DemoRole; windDirection: WindDirection }
   | { type: "SET_WIND_SPEED"; actor: DemoRole; windSpeed: WindSpeed }
   | { type: "SET_FIRE_INTENSITY"; actor: DemoRole; fireIntensity: FireIntensity }
+  | { type: "SET_SOURCE_POINT"; actor: DemoRole; sourcePointId: string }
+  | { type: "SET_FIRE_HAZE_STATUS"; actor: DemoRole; fireHazeStatus: FireHazeStatus }
+  | { type: "SET_IMPACT_RADIUS"; actor: DemoRole; impactRadiusKm: ImpactRadius }
+  | { type: "SET_AQI"; actor: DemoRole; aqi: number }
+  | { type: "SET_PM25"; actor: DemoRole; pm25: number }
   | { type: "VALIDATE_ENVIRONMENT"; actor: DemoRole; note?: string }
   | { type: "VERIFY_INCIDENT"; actor: DemoRole }
   | { type: "RECORD_RESPONSE"; actor: DemoRole; action?: string }
@@ -102,25 +123,35 @@ function hasOnlyKeys(value: Record<string, unknown>, keys: readonly string[]): b
 function isScenarioEvent(value: unknown): value is DemoScenarioEvent {
   if (!isRecord(value) || !isIsoTimestamp(value.at) || !isString(value.actor) || !isString(value.command)) return false;
   if (!DEMO_ROLES.includes(value.actor as DemoRole) || value.actor === "WARGA") return false;
-  if (!["CREATE_SCENARIO", "PLAY_SIMULATION", "PAUSE_SIMULATION", "SET_WIND_DIRECTION", "SET_WIND_SPEED", "SET_FIRE_INTENSITY", "VALIDATE_ENVIRONMENT", "VERIFY_INCIDENT", "RECORD_RESPONSE", "PUBLISH_NOTICE"].includes(value.command)) return false;
+  if (!["CREATE_SCENARIO", "PLAY_SIMULATION", "PAUSE_SIMULATION", "SET_WIND_DIRECTION", "SET_WIND_SPEED", "SET_FIRE_INTENSITY", "SET_SOURCE_POINT", "SET_FIRE_HAZE_STATUS", "SET_IMPACT_RADIUS", "SET_AQI", "SET_PM25", "VALIDATE_ENVIRONMENT", "VERIFY_INCIDENT", "RECORD_RESPONSE", "PUBLISH_NOTICE"].includes(value.command)) return false;
   if (value.note !== undefined && !isString(value.note)) return false;
   if (value.action !== undefined && !isString(value.action)) return false;
   if (value.windDirection !== undefined && !WIND_DIRECTIONS.includes(value.windDirection as WindDirection)) return false;
   if (value.windSpeed !== undefined && !WIND_SPEEDS.includes(value.windSpeed as WindSpeed)) return false;
   if (value.fireIntensity !== undefined && !FIRE_INTENSITIES.includes(value.fireIntensity as FireIntensity)) return false;
+  if (value.sourcePointId !== undefined && (!isString(value.sourcePointId) || !isDemoReferencePointId(value.sourcePointId))) return false;
+  if (value.fireHazeStatus !== undefined && value.fireHazeStatus !== "FIRE" && value.fireHazeStatus !== "HAZE") return false;
+  if (value.impactRadiusKm !== undefined && !IMPACT_RADII.includes(value.impactRadiusKm as ImpactRadius)) return false;
+  if (value.aqi !== undefined && (typeof value.aqi !== "number" || value.aqi < 0 || value.aqi > 500)) return false;
+  if (value.pm25 !== undefined && (typeof value.pm25 !== "number" || value.pm25 < 0 || value.pm25 > 500)) return false;
 
   if (value.command === "VALIDATE_ENVIRONMENT") return value.action === undefined && hasOnlyKeys(value, ["at", "actor", "command", "note"]);
   if (value.command === "RECORD_RESPONSE") return value.note === undefined && hasOnlyKeys(value, ["at", "actor", "command", "action"]);
   if (value.command === "SET_WIND_DIRECTION") return value.note === undefined && value.action === undefined && value.windSpeed === undefined && value.fireIntensity === undefined && hasOnlyKeys(value, ["at", "actor", "command", "windDirection"]);
   if (value.command === "SET_WIND_SPEED") return value.note === undefined && value.action === undefined && value.windDirection === undefined && value.fireIntensity === undefined && hasOnlyKeys(value, ["at", "actor", "command", "windSpeed"]);
   if (value.command === "SET_FIRE_INTENSITY") return value.note === undefined && value.action === undefined && value.windDirection === undefined && value.windSpeed === undefined && hasOnlyKeys(value, ["at", "actor", "command", "fireIntensity"]);
+  if (value.command === "SET_SOURCE_POINT") return hasOnlyKeys(value, ["at", "actor", "command", "sourcePointId"]);
+  if (value.command === "SET_FIRE_HAZE_STATUS") return hasOnlyKeys(value, ["at", "actor", "command", "fireHazeStatus"]);
+  if (value.command === "SET_IMPACT_RADIUS") return hasOnlyKeys(value, ["at", "actor", "command", "impactRadiusKm"]);
+  if (value.command === "SET_AQI") return hasOnlyKeys(value, ["at", "actor", "command", "aqi"]);
+  if (value.command === "SET_PM25") return hasOnlyKeys(value, ["at", "actor", "command", "pm25"]);
   return value.note === undefined && value.action === undefined && value.windDirection === undefined && value.windSpeed === undefined && value.fireIntensity === undefined && hasOnlyKeys(value, ["at", "actor", "command"]);
 }
 
 function hasScenarioShape(value: unknown): value is DemoScenario {
   if (!isRecord(value) || value.version !== DEMO_SCENARIO_VERSION || value.isSynthetic !== true || !workflowSteps.includes(value.workflow as WorkflowStep)) return false;
   const simulation = value.simulation;
-  if (!isRecord(simulation) || typeof simulation.isPlaying !== "boolean" || !WIND_DIRECTIONS.includes(simulation.windDirection as WindDirection) || !WIND_SPEEDS.includes(simulation.windSpeed as WindSpeed) || !FIRE_INTENSITIES.includes(simulation.fireIntensity as FireIntensity)) return false;
+  if (!isRecord(simulation) || typeof simulation.isPlaying !== "boolean" || !WIND_DIRECTIONS.includes(simulation.windDirection as WindDirection) || !WIND_SPEEDS.includes(simulation.windSpeed as WindSpeed) || !FIRE_INTENSITIES.includes(simulation.fireIntensity as FireIntensity) || !isString(simulation.sourcePointId) || !isDemoReferencePointId(simulation.sourcePointId) || (simulation.fireHazeStatus !== "FIRE" && simulation.fireHazeStatus !== "HAZE") || !IMPACT_RADII.includes(simulation.impactRadiusKm as ImpactRadius) || (simulation.aqiOverride !== null && (typeof simulation.aqiOverride !== "number" || simulation.aqiOverride < 0 || simulation.aqiOverride > 500)) || (simulation.pm25Override !== null && (typeof simulation.pm25Override !== "number" || simulation.pm25Override < 0 || simulation.pm25Override > 500))) return false;
   if (!isRecord(value.region) || !isString(value.region.name) || !isString(value.region.province) || !isString(value.region.slug) || !Array.isArray(value.events) || !value.events.every(isScenarioEvent)) return false;
   if (value.createdAt !== null && !isIsoTimestamp(value.createdAt)) return false;
   if (value.observation !== null && (!isRecord(value.observation) || typeof value.observation.aqi !== "number" || typeof value.observation.pm25 !== "number" || !isString(value.observation.wind) || !isString(value.observation.summary))) return false;
@@ -144,7 +175,7 @@ export function initialDemoScenario(): DemoScenario {
     version: DEMO_SCENARIO_VERSION,
     isSynthetic: true,
     workflow: "READY",
-    simulation: { isPlaying: false, windDirection: "Tenggara", windSpeed: 18, fireIntensity: 3 },
+    simulation: { isPlaying: false, windDirection: "Tenggara", windSpeed: 18, fireIntensity: 3, sourcePointId: "pontianak-utara", fireHazeStatus: "FIRE", impactRadiusKm: 15, aqiOverride: null, pm25Override: null },
     region: { ...demoRegion },
     createdAt: null,
     observation: null,
@@ -173,8 +204,8 @@ function windLabel(simulation: DemoSimulation): string {
 }
 
 function syntheticObservation(simulation: DemoSimulation): NonNullable<DemoScenario["observation"]> {
-  const aqi = 126 + simulation.fireIntensity * 11 + Math.round(simulation.windSpeed / 6);
-  const pm25 = 38 + simulation.fireIntensity * 14 + Math.round(simulation.windSpeed / 4);
+  const aqi = simulation.aqiOverride ?? 126 + simulation.fireIntensity * 11 + Math.round(simulation.windSpeed / 6);
+  const pm25 = simulation.pm25Override ?? 38 + simulation.fireIntensity * 14 + Math.round(simulation.windSpeed / 4);
   return {
     aqi,
     pm25,
@@ -193,6 +224,11 @@ function eventFor(command: Exclude<DemoCommand, { type: "RESET_SCENARIO" }>, at:
   if (command.type === "SET_WIND_DIRECTION") return { at, actor: command.actor as InternalDemoRole, command: command.type, windDirection: command.windDirection };
   if (command.type === "SET_WIND_SPEED") return { at, actor: command.actor as InternalDemoRole, command: command.type, windSpeed: command.windSpeed };
   if (command.type === "SET_FIRE_INTENSITY") return { at, actor: command.actor as InternalDemoRole, command: command.type, fireIntensity: command.fireIntensity };
+  if (command.type === "SET_SOURCE_POINT") return { at, actor: command.actor as InternalDemoRole, command: command.type, sourcePointId: command.sourcePointId };
+  if (command.type === "SET_FIRE_HAZE_STATUS") return { at, actor: command.actor as InternalDemoRole, command: command.type, fireHazeStatus: command.fireHazeStatus };
+  if (command.type === "SET_IMPACT_RADIUS") return { at, actor: command.actor as InternalDemoRole, command: command.type, impactRadiusKm: command.impactRadiusKm };
+  if (command.type === "SET_AQI") return { at, actor: command.actor as InternalDemoRole, command: command.type, aqi: command.aqi };
+  if (command.type === "SET_PM25") return { at, actor: command.actor as InternalDemoRole, command: command.type, pm25: command.pm25 };
   return { at, actor: command.actor as InternalDemoRole, command: command.type };
 }
 
@@ -234,6 +270,11 @@ function transitionDemoCommand(state: DemoScenario, command: Exclude<DemoCommand
       const next = withSimulation(state, { ...state.simulation, fireIntensity: command.fireIntensity });
       return { ...next, events: appendEvent(next, command, at) };
     }
+    case "SET_SOURCE_POINT": { requireActor(command.actor, "SIMULATOR"); requireSimulatorControlWindow(state); if (!isDemoReferencePointId(command.sourcePointId)) reject("Titik sumber data uji tidak dikenal."); const next = withSimulation(state, { ...state.simulation, sourcePointId: command.sourcePointId }); return { ...next, events: appendEvent(next, command, at) }; }
+    case "SET_FIRE_HAZE_STATUS": { requireActor(command.actor, "SIMULATOR"); requireSimulatorControlWindow(state); const next = withSimulation(state, { ...state.simulation, fireHazeStatus: command.fireHazeStatus }); return { ...next, events: appendEvent(next, command, at) }; }
+    case "SET_IMPACT_RADIUS": { requireActor(command.actor, "SIMULATOR"); requireSimulatorControlWindow(state); const next = withSimulation(state, { ...state.simulation, impactRadiusKm: command.impactRadiusKm }); return { ...next, events: appendEvent(next, command, at) }; }
+    case "SET_AQI": { requireActor(command.actor, "SIMULATOR"); requireSimulatorControlWindow(state); const next = withSimulation(state, { ...state.simulation, aqiOverride: command.aqi }); return { ...next, events: appendEvent(next, command, at) }; }
+    case "SET_PM25": { requireActor(command.actor, "SIMULATOR"); requireSimulatorControlWindow(state); const next = withSimulation(state, { ...state.simulation, pm25Override: command.pm25 }); return { ...next, events: appendEvent(next, command, at) }; }
     case "VALIDATE_ENVIRONMENT": {
       requireActor(command.actor, "DLH"); requireWorkflow(state, "ENVIRONMENT_PENDING");
       return { ...state, workflow: "ENVIRONMENT_VALIDATED", environmentalValidation: { validatedBy: "DLH", validatedAt: at, note: command.note?.trim() || "AQI, PM2.5, arah angin, dan dampak asap telah divalidasi sebagai data uji." }, events: appendEvent(state, command, at) };
@@ -260,6 +301,11 @@ function commandFromEvent(event: DemoScenarioEvent): Exclude<DemoCommand, { type
   if (event.command === "SET_WIND_DIRECTION") return { type: event.command, actor: event.actor, windDirection: event.windDirection! };
   if (event.command === "SET_WIND_SPEED") return { type: event.command, actor: event.actor, windSpeed: event.windSpeed! };
   if (event.command === "SET_FIRE_INTENSITY") return { type: event.command, actor: event.actor, fireIntensity: event.fireIntensity! };
+  if (event.command === "SET_SOURCE_POINT") return { type: event.command, actor: event.actor, sourcePointId: event.sourcePointId! };
+  if (event.command === "SET_FIRE_HAZE_STATUS") return { type: event.command, actor: event.actor, fireHazeStatus: event.fireHazeStatus! };
+  if (event.command === "SET_IMPACT_RADIUS") return { type: event.command, actor: event.actor, impactRadiusKm: event.impactRadiusKm! };
+  if (event.command === "SET_AQI") return { type: event.command, actor: event.actor, aqi: event.aqi! };
+  if (event.command === "SET_PM25") return { type: event.command, actor: event.actor, pm25: event.pm25! };
   return { type: event.command, actor: event.actor };
 }
 
@@ -302,6 +348,11 @@ export function eventLabel(event: DemoScenarioEvent): string {
     SET_WIND_DIRECTION: "Simulator mengubah arah angin data uji.",
     SET_WIND_SPEED: "Simulator mengubah kecepatan angin data uji.",
     SET_FIRE_INTENSITY: "Simulator mengubah intensitas api data uji.",
+    SET_SOURCE_POINT: "Simulator memilih titik sumber data uji.",
+    SET_FIRE_HAZE_STATUS: "Simulator mengubah status api atau asap data uji.",
+    SET_IMPACT_RADIUS: "Simulator mengubah radius dampak data uji.",
+    SET_AQI: "Simulator mengubah AQI data uji.",
+    SET_PM25: "Simulator mengubah PM2.5 data uji.",
     VALIDATE_ENVIRONMENT: "DLH memvalidasi dampak lingkungan sintetis.",
     VERIFY_INCIDENT: "BPBD memverifikasi insiden sintetis.",
     RECORD_RESPONSE: "BPBD mencatat tindakan respons dan membuat draf informasi warga.",
@@ -316,8 +367,9 @@ export function projectPublicDemoNotice(state: DemoScenario): PublicDemoNotice |
 }
 
 export function projectDemoMap(state: DemoScenario): DemoMapProjection {
-  const center: [number, number] = [-0.05, 109.34];
-  const fire: [number, number] = [-0.12, 109.43];
+  const source = demoReferencePoint(state.simulation.sourcePointId);
+  const center: [number, number] = source.coordinates;
+  const fire: [number, number] = source.coordinates;
   const bearings: Record<WindDirection, number> = { Tenggara: 135, Selatan: 180, "Barat Daya": 225, Barat: 270 };
   const radians = bearings[state.simulation.windDirection] * Math.PI / 180;
   const reach = 0.045 + state.simulation.windSpeed / 1_000;
@@ -325,10 +377,11 @@ export function projectDemoMap(state: DemoScenario): DemoMapProjection {
   return {
     center,
     fire,
-    hazeRadiusMeters: 5_000 + state.simulation.fireIntensity * 2_000,
+    hazeRadiusMeters: state.simulation.impactRadiusKm * 1_000,
     windEnd,
     windLabel: windLabel(state.simulation),
     fireIntensity: state.simulation.fireIntensity,
+    sourcePointId: source.id,
     isActive: state.workflow !== "READY"
   };
 }

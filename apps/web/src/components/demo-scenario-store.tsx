@@ -18,9 +18,9 @@ type DemoScenarioContextValue = {
 
 const DemoScenarioContext = createContext<DemoScenarioContextValue | null>(null);
 
-export function DemoScenarioProvider({ children }: Readonly<{ children: React.ReactNode }>) {
+export function DemoScenarioProvider({ children, sessionRole }: Readonly<{ children: React.ReactNode; sessionRole?: DemoRole }>) {
   const [scenario, setScenario] = useState(initialDemoScenario);
-  const [role, setRole] = useState<DemoRole>("SIMULATOR");
+  const [role, setRole] = useState<DemoRole>(sessionRole ?? "SIMULATOR");
   const [isReady, setReady] = useState(false);
   const channel = useRef<BroadcastChannel | null>(null);
   const scenarioRef = useRef(scenario);
@@ -37,7 +37,7 @@ export function DemoScenarioProvider({ children }: Readonly<{ children: React.Re
     }
     try {
       const savedRole = window.localStorage.getItem(roleStorageKey);
-      if (savedRole && DEMO_ROLES.includes(savedRole as DemoRole)) setRole(savedRole as DemoRole);
+      if (!sessionRole && savedRole && DEMO_ROLES.includes(savedRole as DemoRole)) setRole(savedRole as DemoRole);
     } catch { /* The default Simulator role remains usable without local storage. */ }
     setReady(true);
     try {
@@ -60,7 +60,7 @@ export function DemoScenarioProvider({ children }: Readonly<{ children: React.Re
     };
     window.addEventListener("storage", onStorage);
     return () => { channel.current?.close(); channel.current = null; window.removeEventListener("storage", onStorage); };
-  }, []);
+  }, [sessionRole]);
   const commit = useCallback((next: DemoScenario) => {
     scenarioRef.current = next;
     setScenario(next);
@@ -74,11 +74,12 @@ export function DemoScenarioProvider({ children }: Readonly<{ children: React.Re
     commit(next);
   }, [commit, role]);
   const chooseRole = useCallback((nextRole: DemoRole) => {
+    if (sessionRole && nextRole !== sessionRole) return;
     if (!DEMO_ROLES.includes(nextRole)) return;
     setRole(nextRole);
     try { window.localStorage.setItem(roleStorageKey, nextRole); }
     catch { /* Keep the in-memory role usable when persistent browser storage is unavailable. */ }
-  }, []);
+  }, [sessionRole]);
   const value = useMemo(() => ({ scenario, role, setRole: chooseRole, run, publicNotice: projectPublicDemoNotice(scenario), isReady }), [scenario, role, chooseRole, run, isReady]);
   return <DemoScenarioContext.Provider value={value}>{children}</DemoScenarioContext.Provider>;
 }

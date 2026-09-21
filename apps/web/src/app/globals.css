@@ -123,6 +123,57 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .ops-grid { grid-template-columns: 1fr; }
 }
 
+/* Local-demo access and operations map: functional hierarchy stays above decoration. */
+:root[data-theme="dark"] {
+  --canvas: #111827;
+  --surface: #182234;
+  --surface-muted: #243146;
+  --ink: #e5edf7;
+  --muted: #a8b8cb;
+  --line: #35465d;
+  --brand: #7dd3fc;
+  --brand-deep: #b9e8fb;
+  --brand-soft: #163a51;
+  --safe: #5eead4;
+  --warn: #fbbf24;
+  --danger: #fca5a5;
+  --focus: #93c5fd;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, .24);
+  --shadow-md: 0 8px 20px rgba(0, 0, 0, .24);
+}
+
+.simulation-mode-banner { position: sticky; top: 0; min-height: 32px; align-items: center; padding: 6px 14px; font-size: .72rem; }
+.simulation-mode-banner span { font-weight: 500; }
+.session-role { display: inline-flex; align-items: center; min-height: 34px; padding: 6px 9px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); font-size: .72rem; font-weight: 800; letter-spacing: .03em; }
+.simulator-shell .session-role { border-color: #3f3f46; color: #fbbf24; }
+.ops-utilities { display: flex !important; align-items: center; gap: 8px; }
+
+.local-demo-login { display: grid; gap: 14px; max-width: 470px; margin-top: 28px; padding: 20px; border: 1px solid #DCE5EF; border-radius: 14px; background: #FFFFFF; box-shadow: var(--shadow-sm); }
+.local-demo-login label, .operational-map-tools label { display: grid; gap: 6px; color: var(--ink); font-size: .8rem; font-weight: 800; }
+.local-demo-login input, .operational-map-tools input, .operational-map-tools select, .simulation-controls input { min-height: 42px; padding: 9px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font: inherit; }
+.local-demo-login input:focus-visible, .operational-map-tools input:focus-visible, .operational-map-tools select:focus-visible, .simulation-controls input:focus-visible { outline: 3px solid color-mix(in srgb, var(--focus) 35%, transparent); outline-offset: 1px; }
+.local-demo-login .button { justify-self: start; min-width: 132px; }
+
+.simulation-controls { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.simulation-controls input { border-color: #3f3f46; background: #0a0a0a; color: #f7f7f7; }
+.demo-map-canvas, .demo-map-canvas.leaflet-container, .is-simulator .demo-map-canvas { background: #dfe8e6; }
+.is-simulator .demo-map-canvas { background: #151515; }
+
+.operational-map { margin: 20px 0; padding: 20px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: var(--shadow-sm); }
+.operational-map-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }.operational-map-head h2 { margin: 3px 0 7px; color: var(--brand-deep); font-size: 1.25rem; }.operational-map-head .muted { max-width: 72ch; margin: 0; }
+.operational-map-tools { display: grid; grid-template-columns: minmax(220px, 1.8fr) repeat(2, minmax(150px, .7fr)); gap: 10px; margin: 18px 0; }
+.operational-map-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(300px, .7fr); min-height: 440px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.operational-map-frame { position: relative; min-height: 440px; background: #e6eeee; }.operational-map-frame:fullscreen { width: 100vw; height: 100vh; background: #e6eeee; }.operational-map-frame:fullscreen .operational-map-canvas { height: 100vh; }
+.operational-map-canvas, .operational-map-canvas.leaflet-container { width: 100%; height: 100%; min-height: 440px; background: #e6eeee; }
+.map-data-label { position: absolute; z-index: 500; bottom: 10px; left: 10px; padding: 5px 7px; border: 1px solid #DCE5EF; border-radius: 7px; background: rgba(255,255,255,.94); color: #334155; font-size: .66rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; pointer-events: none; }
+.aqi-legend { position: absolute; z-index: 500; right: 10px; bottom: 10px; display: flex; flex-wrap: wrap; gap: 6px 9px; max-width: 280px; padding: 8px; border: 1px solid #DCE5EF; border-radius: 8px; background: rgba(255,255,255,.94); color: #334155; font-size: .66rem; }.aqi-legend strong { width: 100%; }.aqi-legend span { display: inline-flex; align-items: center; gap: 4px; }.aqi-legend i { width: 8px; height: 8px; border-radius: 50%; }.aqi-legend em { width: 100%; color: #64748B; font-style: normal; }
+.aqi-good { background: #16a34a; }.aqi-moderate { background: #ca8a04; }.aqi-sensitive { background: #ea580c; }.aqi-unhealthy { background: #dc2626; }.aqi-very-unhealthy { background: #7e22ce; }.aqi-hazardous { background: #7f1d1d; }
+.operational-point-panel { display: grid; grid-template-rows: auto minmax(0, 1fr); min-height: 0; border-left: 1px solid var(--line); background: var(--surface); }.operational-point-detail { padding: 16px; border-bottom: 1px solid var(--line); }.operational-point-detail h3 { margin: 4px 0 6px; color: var(--brand-deep); font-size: 1.1rem; }.operational-point-detail .muted { margin: 0; font-size: .8rem; }.operational-point-detail dl { display: grid; grid-template-columns: repeat(2, 1fr); gap: 7px; margin: 14px 0; }.operational-point-detail dl div { padding: 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-muted); }.operational-point-detail dt { color: var(--muted); font-size: .68rem; }.operational-point-detail dd { margin: 3px 0 0; color: var(--ink); font-size: .78rem; font-weight: 800; }.point-wind, .point-action { margin: 9px 0; font-size: .78rem; line-height: 1.45; }.point-action { padding: 8px; border-left: 3px solid #06B6D4; background: var(--brand-soft); }.operational-point-detail .freshness { margin: 8px 0 0; font-size: .72rem; }
+.operational-point-list { min-height: 0; overflow: auto; padding: 8px; }.operational-point-list button { display: grid; grid-template-columns: 10px minmax(0, 1fr) auto; width: 100%; align-items: center; gap: 8px; padding: 10px; border: 1px solid transparent; border-radius: 8px; background: transparent; color: var(--ink); text-align: left; cursor: pointer; }.operational-point-list button:hover, .operational-point-list button.is-selected { border-color: var(--line); background: var(--brand-soft); }.operational-point-list button > i { width: 9px; height: 9px; border-radius: 50%; }.operational-point-list strong, .operational-point-list small { display: block; }.operational-point-list strong { font-size: .78rem; }.operational-point-list small { margin-top: 2px; color: var(--muted); font-size: .68rem; }.operational-point-list b { color: #dc2626; font-size: .7rem; }
+
+@media (max-width: 900px) { .simulation-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); }.operational-map-grid { grid-template-columns: 1fr; }.operational-point-panel { max-height: 520px; border-top: 1px solid var(--line); border-left: 0; }.operational-map-frame { min-height: 380px; }.operational-map-canvas, .operational-map-canvas.leaflet-container { min-height: 380px; } }
+@media (max-width: 760px) { .simulation-mode-banner span { display: none; }.ops-utilities { width: 100%; justify-content: space-between; }.local-demo-login { padding: 16px; }.local-demo-login .button { width: 100%; }.simulation-controls, .operational-map-tools, .operational-point-detail dl { grid-template-columns: 1fr; }.operational-map { padding: 14px; }.operational-map-head { flex-direction: column; }.operational-map-frame { min-height: 310px; }.operational-map-canvas, .operational-map-canvas.leaflet-container { min-height: 310px; }.aqi-legend { right: 7px; left: 7px; max-width: none; }.operational-point-panel { max-height: none; }.operational-point-list { max-height: 340px; } }
+
 /* LUMI command-center layer: a compact, calm operational surface rather than a generic card stack. */
 .ops-layout { background: var(--canvas); grid-template-columns: 272px minmax(0, 1fr); }
 .ops-sidebar { background: var(--brand-deep); border: 0; color: #eef3ff; padding: 26px 18px; display: flex; flex-direction: column; }
@@ -293,3 +344,11 @@ html, body, button, input, select { font-family: Inter, Geist, ui-sans-serif, sy
   .entry-flow { padding: 20px; }
   .entry-disclaimer { flex-direction: column; }
 }
+
+/* Final local-demo overrides follow legacy styles so the visible surfaces keep the LUMI palette. */
+:root[data-theme="dark"] { --canvas: #111827; --surface: #182234; --surface-muted: #243146; --ink: #e5edf7; --muted: #a8b8cb; --line: #35465d; --brand: #7dd3fc; --brand-deep: #b9e8fb; --brand-soft: #163a51; --safe: #5eead4; --warn: #fbbf24; --danger: #fca5a5; --focus: #93c5fd; --shadow-sm: 0 1px 2px rgba(0,0,0,.24); --shadow-md: 0 8px 20px rgba(0,0,0,.24); }
+.ops-sidebar .brand-mark { background: #fff; }
+.simulator-shell { background: #000 !important; }
+.simulator-header { background: #000 !important; }
+.demo-map-canvas, .demo-map-canvas.leaflet-container { background: #eaf4f5; }
+.is-simulator .demo-map-canvas, .is-simulator .demo-map-canvas.leaflet-container { background: #151515; }

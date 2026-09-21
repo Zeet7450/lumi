@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { LumiMark } from "@/components/brand-marks";
-import { EntryPortalAction } from "@/components/entry-portal-action";
+import { LocalDemoLogin } from "@/components/local-demo-login";
 import { redirect } from "next/navigation";
 
 export default function HomePage() {
@@ -13,12 +13,9 @@ export default function HomePage() {
     <section className="entry-hero" aria-labelledby="entry-title">
       <div>
         <p className="eyebrow">Kalimantan Barat · Kebakaran lahan & asap</p>
-        <h1 id="entry-title">Koordinasi informasi kualitas udara untuk latihan lintas instansi.</h1>
-        <p className="entry-lede">LUMI memperagakan alur sintetik dari Simulator, validasi DLH, respons BPBD, persetujuan manusia, hingga informasi untuk warga.</p>
-        <div className="entry-actions">
-          <Link className="button" href="/ops/insiden">Masuk Demo Instansi</Link>
-          <EntryPortalAction />
-        </div>
+        <h1 id="entry-title">Masuk ke ruang latihan koordinasi LUMI.</h1>
+        <p className="entry-lede">Gunakan akun demo lokal untuk melihat peran Simulator, DLH, BPBD, Approver, atau Warga pada alur informasi sintetis.</p>
+        <LocalDemoLogin />
       </div>
       <aside className="entry-flow" aria-label="Alur demo LUMI">
         <p className="eyebrow">Alur data uji</p>
