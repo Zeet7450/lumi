@@ -1,7 +1,9 @@
 "use client";
 
 import { useActionState } from "react";
-import { emptyLoginState, loginLocalDemo } from "@/app/local-demo-actions";
+import { loginLocalDemo } from "@/app/local-demo-actions";
+
+const emptyLoginState = { error: "" };
 
 export function LocalDemoLogin() {
   const [state, action, pending] = useActionState(loginLocalDemo, emptyLoginState);

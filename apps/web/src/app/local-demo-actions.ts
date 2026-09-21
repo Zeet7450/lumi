@@ -5,10 +5,7 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { LOCAL_DEMO_COOKIE, localDemoAccounts } from "@/lib/local-demo-auth";
 
-export type LoginState = { error: string };
-
-const emptyLoginState: LoginState = { error: "" };
-export { emptyLoginState };
+type LoginState = { error: string };
 
 function passwordsMatch(provided: string, expected: string): boolean {
   const left = Buffer.from(provided);
