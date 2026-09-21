@@ -65,7 +65,7 @@ export function OpsShell({ children }: Readonly<{ children: React.ReactNode; all
     setCollapsed((current) => {
       const next = !current;
       window.localStorage.setItem("lumi-ops-sidebar-collapsed", String(next));
-      window.dispatchEvent(new Event("lumi-sidebar-resize"));
+      window.setTimeout(() => window.dispatchEvent(new Event("lumi-sidebar-resize")), 210);
       return next;
     });
   }

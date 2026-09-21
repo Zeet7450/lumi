@@ -5,7 +5,7 @@
 /* Browser-local product demo: state is deliberately clear, narrow, and visibly synthetic. */
 .demo-role-control { display: grid; gap: 4px; color: inherit; font-size: .72rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }.demo-role-control select { min-height: 38px; padding: 7px 9px; border: 1px solid currentColor; border-radius: 8px; background: transparent; color: inherit; font: 700 .85rem "Fira Sans", Arial, sans-serif; text-transform: none; }.demo-role-control option { background: #fff; color: #0f172a; }.ops-sidebar .demo-role-control { margin: 18px 8px 0; color: #d9e4fa; }.demo-role-control.is-compact { display: flex; align-items: center; gap: 7px; white-space: nowrap; }.demo-role-control.is-compact select { min-height: 36px; }
 .demo-access-gate { display: grid; min-height: calc(100vh - 48px); place-items: center; padding: 28px; }.demo-access-card { width: min(620px, 100%); padding: clamp(24px, 5vw, 42px); border: 1px solid var(--line); border-radius: 18px; background: var(--surface); box-shadow: var(--shadow-md); }.demo-access-card h1 { margin: 6px 0 14px; font-size: clamp(1.85rem, 5vw, 2.8rem); line-height: 1.08; letter-spacing: -.045em; }.demo-access-card .muted { max-width: 58ch; }.demo-access-actions { display: flex; align-items: end; flex-wrap: wrap; gap: 14px; margin-top: 24px; }.demo-access-actions .demo-role-control { min-width: 180px; color: var(--ink); }
-.workflow-board { max-width: 1180px; }.workflow-empty { display: grid; gap: 6px; padding: 24px; border: 1px dashed var(--line); border-radius: 16px; background: var(--surface); color: var(--muted); }.workflow-empty strong { color: var(--ink); }.workflow-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }.workflow-role-card { padding: 22px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); box-shadow: var(--shadow-sm); }.workflow-role-card h2 { margin: 4px 0 16px; }.workflow-role-card dl { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 0 0 18px; }.workflow-role-card dl div { padding: 10px; border-radius: 10px; background: var(--surface-muted); }.workflow-role-card dt { color: var(--muted); font-size: .72rem; }.workflow-role-card dd { margin: 4px 0 0; font-weight: 800; }.workflow-role-card .button + .button { margin-top: 10px; }.workflow-role-card small { display: block; margin-top: 12px; color: var(--muted); }.role-done { margin: 12px 0; color: var(--safe); font-weight: 800; }.workflow-publication { max-width: 900px; }.notice-draft { margin: 18px 0; padding: 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-muted); }.notice-draft p:last-child { margin-bottom: 0; font-size: 1.08rem; line-height: 1.65; }
+.workflow-board { width: 100%; max-width: none; }.workflow-empty { display: grid; gap: 6px; padding: 24px; border: 1px dashed var(--line); border-radius: 16px; background: var(--surface); color: var(--muted); }.workflow-empty strong { color: var(--ink); }.workflow-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }.workflow-role-card { padding: 22px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); box-shadow: var(--shadow-sm); }.workflow-role-card h2 { margin: 4px 0 16px; }.workflow-role-card dl { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 0 0 18px; }.workflow-role-card dl div { padding: 10px; border-radius: 10px; background: var(--surface-muted); }.workflow-role-card dt { color: var(--muted); font-size: .72rem; }.workflow-role-card dd { margin: 4px 0 0; font-weight: 800; }.workflow-role-card .button + .button { margin-top: 10px; }.workflow-role-card small { display: block; margin-top: 12px; color: var(--muted); }.role-done { margin: 12px 0; color: var(--safe); font-weight: 800; }.workflow-publication { max-width: 900px; }.notice-draft { margin: 18px 0; padding: 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-muted); }.notice-draft p:last-child { margin-bottom: 0; font-size: 1.08rem; line-height: 1.65; }
 .simulator-shell { background: #000 !important; color: #f7f7f7; }.simulator-shell .brand-mark { background: #f59e0b !important; color: #1c1304; }.simulator-shell .eyebrow { color: #f59e0b; }.simulator-shell .muted { color: #b6b6b6; }.simulator-header { border-color: #27272a !important; background: #000 !important; }.simulator-main { width: min(1180px, calc(100% - 40px)); margin: 0 auto; padding: 42px 0 70px; }.workflow-console { display: grid; gap: 16px; }.simulator-intro { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }.simulator-intro h1 { margin: 4px 0 8px; font: 700 clamp(2.1rem, 4vw, 3.6rem)/1 "Fira Code", monospace; letter-spacing: -.07em; }.simulator-intro p { max-width: 680px; margin: 0; color: #b6b6b6; }.workflow-state { align-self: start; padding: 8px 10px; border: 1px solid #f59e0b; border-radius: 999px; color: #fbbf24; font: 700 .75rem "Fira Code", monospace; }.workflow-scenario-card, .workflow-actions { padding: 22px; border: 1px solid #27272a; border-radius: 14px; background: #0a0a0a; }.workflow-scenario-card { display: grid; grid-template-columns: 1fr 1.25fr; gap: 26px; }.workflow-scenario-card h2, .workflow-actions h2 { margin: 4px 0 8px; }.workflow-scenario-card p, .workflow-actions p { color: #b6b6b6; }.workflow-facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 9px; }.workflow-facts span { display: grid; gap: 4px; padding: 13px; border: 1px solid #27272a; border-radius: 10px; color: #a5a5a5; font-size: .76rem; }.workflow-facts strong { color: #f7f7f7; font: 700 .95rem "Fira Code", monospace; }.workflow-actions { display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: end; }.workflow-actions .preview { grid-column: 1 / -1; margin: 0; background: transparent; }.button-row { display: flex; gap: 10px; flex-wrap: wrap; }.simulator-shell .button { border-color: #f59e0b; background: #f59e0b; color: #1c1304; }.simulator-shell .button:disabled { opacity: .42; }.simulator-shell .sim-reset { border-color: #ef4444; background: transparent; color: #fca5a5; }
 @media (max-width: 760px) { .workflow-columns, .workflow-scenario-card, .workflow-actions { grid-template-columns: 1fr; }.workflow-facts { grid-template-columns: repeat(2, 1fr); }.workflow-role-card dl { grid-template-columns: 1fr; } }
 :root {
@@ -543,6 +543,36 @@ input::placeholder { color: var(--placeholder); opacity: 1; }
 .simulator-shell .source-cards { grid-column: 1 / -1; width: 100%; }.simulator-shell .source-card { width: 100%; box-sizing: border-box; }.simulator-shell .simulation-controls { grid-template-columns: repeat(3, minmax(0, 1fr)); }.simulator-shell .radius-field { min-width: 0; }.simulator-shell .radius-input-group { display: grid; grid-template-columns: minmax(0, 1fr) 82px; gap: 8px; }.simulator-shell .radius-input-group input, .simulator-shell .radius-input-group select { width: 100%; min-width: 0; box-sizing: border-box; }
 @media (max-width: 760px) { .simulator-shell .simulation-controls { grid-template-columns: 1fr; }.simulator-shell .radius-input-group { grid-template-columns: minmax(0, 1fr) 96px; } }
 
+/* The operational map is followed by its filters and one contained decision panel. */
+.ops-layout { display: flex; align-items: stretch; }
+.ops-sidebar { flex: 0 0 252px; width: 252px; transition: flex-basis 200ms ease, width 200ms ease, padding 200ms ease, background 200ms ease; }
+.ops-layout.is-sidebar-collapsed .ops-sidebar { flex-basis: 88px; width: 88px; }
+.ops-main { flex: 1 1 0; width: 0; min-width: 0; max-width: none; }
+.operational-map-grid, .operational-map-tools, .operational-point-panel { order: initial; }
+.operational-map-grid { width: 100%; min-height: 440px; }
+.operational-map-frame, .operational-map-canvas, .operational-map-canvas.leaflet-container { min-height: 440px; }
+.operational-map-tools { margin: 16px 0; }
+.operational-point-panel { height: clamp(360px, 42vh, 420px); margin: 0; display: grid; grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); gap: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.operational-point-detail { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 6px 16px; padding: 12px 16px; border-bottom: 1px solid var(--line); background: var(--surface); }
+.operational-point-detail .eyebrow, .operational-point-detail h3, .operational-point-detail .muted, .operational-point-detail .freshness { margin: 0; }
+.operational-point-detail h3 { font-size: 1rem; line-height: 1.2; }
+.operational-point-detail .muted, .operational-point-detail .freshness { font-size: .75rem; }
+.operational-point-detail dl { display: grid; grid-template-columns: repeat(2, minmax(68px, auto)); gap: 8px; margin: 0; }
+.operational-point-detail dl div { padding: 6px 8px; }
+.operational-point-detail dt { font-size: .65rem; }
+.operational-point-detail dd { font-size: .78rem; }
+.operational-point-detail .freshness { grid-column: 1 / -1; }
+.operational-point-list { min-height: 0; overflow-x: hidden; overflow-y: auto; padding: 6px; scrollbar-color: color-mix(in srgb, var(--muted) 58%, transparent) transparent; scrollbar-width: thin; }
+.operational-point-list::-webkit-scrollbar { width: 10px; }
+.operational-point-list::-webkit-scrollbar-thumb { border: 3px solid transparent; border-radius: 999px; background: color-mix(in srgb, var(--muted) 58%, transparent); background-clip: padding-box; }
+.operational-point-list button { grid-template-columns: 9px minmax(0, 1fr) auto; min-height: 46px; gap: 10px; padding: 7px 10px; border-radius: 7px; }
+.operational-point-list button > i { width: 9px; height: 9px; }
+.operational-point-copy, .operational-point-metrics { min-width: 0; }
+.operational-point-list strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .8rem; }
+.operational-point-list small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .7rem; }
+.operational-point-metrics { display: grid; justify-items: end; gap: 1px; text-align: right; }
+.operational-point-metrics b { color: var(--ink); font-size: .72rem; }
+
 @media (max-width: 900px) {
   .ops-layout, .ops-layout.is-sidebar-collapsed { grid-template-columns: 208px minmax(0, 1fr); }
   .ops-main { padding-right: 22px; padding-left: 22px; }
@@ -551,6 +581,7 @@ input::placeholder { color: var(--placeholder); opacity: 1; }
 @media (max-width: 760px) {
   .ops-layout, .ops-layout.is-sidebar-collapsed { display: block; }
   .ops-sidebar, .ops-layout.is-sidebar-collapsed .ops-sidebar { position: static; height: auto; align-items: stretch; padding: 12px 14px; border-right: 0; border-bottom: 1px solid var(--line); }
+  .ops-sidebar, .ops-layout.is-sidebar-collapsed .ops-sidebar { width: auto; }
   .ops-layout.is-sidebar-collapsed .sidebar-collapse { position: static; }
   .ops-layout.is-sidebar-collapsed .sidebar-label { width: auto; overflow: visible; opacity: 1; pointer-events: auto; }
   .ops-navigation, .ops-settings-nav { display: flex !important; overflow-x: auto; margin-top: 12px !important; padding-top: 0; border-top: 0; }
@@ -560,4 +591,8 @@ input::placeholder { color: var(--placeholder); opacity: 1; }
   .ops-topbar { margin-bottom: 18px; }
   .settings-logout { align-items: flex-start; flex-direction: column; }
   .simulator-navigation .text-utility { padding-right: 6px; padding-left: 6px; }
+  .operational-map-frame, .operational-map-canvas, .operational-map-canvas.leaflet-container { min-height: 310px; }
+  .operational-point-panel { height: 420px; }
+  .operational-point-detail { grid-template-columns: 1fr; }
+  .operational-point-detail dl { justify-content: start; }
 }
