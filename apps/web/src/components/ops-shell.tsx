@@ -10,13 +10,17 @@ import { useDemoScenario } from "./demo-scenario-store";
 import { ThemeInit } from "./theme-init";
 import { ThemeToggle } from "./theme-toggle";
 
-type IconName = "incident" | "publish" | "simulator" | "settings" | "collapse" | "expand";
+type IconName = "incident" | "publish" | "simulator" | "settings" | "collapse" | "expand" | "history" | "response" | "template" | "map";
 
 function NavIcon({ name }: { name: IconName }) {
   const paths: Record<IconName, React.ReactNode> = {
     incident: <><path d="M12 3 4 7v5c0 5 3.4 8.2 8 9 4.6-.8 8-4 8-9V7l-8-4Z" /><path d="m12 8-2.5 4h3l-2 4" /></>,
     publish: <><path d="M4 5h16v14H4z" /><path d="m8 10 3 3 5-5" /></>,
     simulator: <><circle cx="12" cy="12" r="8" /><path d="M12 8v4l3 2" /></>,
+    history: <><path d="M4 12a8 8 0 1 0 2.3-5.7" /><path d="M4 4v5h5M12 8v4l3 2" /></>,
+    response: <><path d="M5 4h14v16H5z" /><path d="M8 9h8M8 13h6" /></>,
+    template: <><path d="M7 3h8l3 3v15H7z" /><path d="M15 3v4h4M10 11h5M10 15h5" /></>,
+    map: <><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3z" /><path d="M9 3v15M15 6v15" /></>,
     settings: <><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.1 2.1-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5v.2h-3v-.2a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1-2.1-2.1.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H5v-3h.2a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1L8.4 6l.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.5V4.7h3v.2a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1 2.1 2.1-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.5 1h.2v3h-.2a1.7 1.7 0 0 0-1.4 1Z" /></>,
     collapse: <path d="m15 18-6-6 6-6" />,
     expand: <path d="m9 18 6-6-6-6" />
@@ -27,10 +31,24 @@ function NavIcon({ name }: { name: IconName }) {
 type NavigationLink = { href: string; label: string; icon: Exclude<IconName, "collapse" | "expand"> };
 
 const linksByRole: Record<Exclude<DemoRole, "WARGA">, readonly NavigationLink[]> = {
-  DLH: [{ href: "/ops/insiden", label: "Lingkungan & observasi", icon: "incident" }],
-  BPBD: [{ href: "/ops/insiden", label: "Insiden & tindakan", icon: "incident" }],
-  APPROVER: [{ href: "/ops/publikasi", label: "Antrean publikasi", icon: "publish" }],
-  SIMULATOR: [{ href: "/ops/simulasi", label: "Simulation Center", icon: "simulator" }]
+  DLH: [
+    { href: "/ops/insiden?ruang=lingkungan", label: "Peta Lingkungan", icon: "map" },
+    { href: "/ops/insiden?ruang=validasi", label: "Validasi Observasi", icon: "incident" },
+    { href: "/ops/insiden?ruang=riwayat", label: "Riwayat Kondisi", icon: "history" }
+  ],
+  BPBD: [
+    { href: "/ops/insiden?ruang=situasi", label: "Peta Situasi", icon: "map" },
+    { href: "/ops/insiden?ruang=tindakan", label: "Verifikasi & Tindakan", icon: "incident" },
+    { href: "/ops/insiden?ruang=status", label: "Status Respons", icon: "response" }
+  ],
+  APPROVER: [
+    { href: "/ops/publikasi?ruang=antrean", label: "Antrean Persetujuan", icon: "publish" },
+    { href: "/ops/publikasi?ruang=aktif", label: "Publikasi Aktif", icon: "history" }
+  ],
+  SIMULATOR: [
+    { href: "/ops/simulasi", label: "Simulation Center", icon: "simulator" },
+    { href: "/ops/simulasi?ruang=template", label: "Template Skenario", icon: "template" }
+  ]
 };
 
 export function OpsShell({ children }: Readonly<{ children: React.ReactNode; allowed?: unknown }>) {
@@ -51,5 +69,6 @@ export function OpsShell({ children }: Readonly<{ children: React.ReactNode; all
       return next;
     });
   }
-  return <><ThemeInit /><div className={`ops-layout${collapsed ? " is-sidebar-collapsed" : ""}`}><aside className="ops-sidebar"><div className="sidebar-brand-row"><Link className="brand" href="/ops/insiden" title="LUMI Ops"><span className="brand-mark" aria-hidden><LumiMark /></span><span className="sidebar-label">LUMI Ops</span></Link><button className="sidebar-collapse icon-button" type="button" onClick={toggleSidebar} aria-label={collapsed ? "Perluas sidebar" : "Ringkas sidebar"} title={collapsed ? "Perluas sidebar" : "Ringkas sidebar"}><NavIcon name={collapsed ? "expand" : "collapse"} /></button></div><p className="muted sidebar-label">Demo lokal · alur lintas instansi</p><nav className="nav ops-navigation" aria-label="Navigasi petugas">{links.map((link) => <Link key={link.href} className={pathname === link.href ? "active" : ""} href={link.href} title={collapsed ? link.label : undefined}><NavIcon name={link.icon} /><span className="sidebar-label">{link.label}</span></Link>)}</nav><nav className="nav ops-navigation ops-settings-nav" aria-label="Pengaturan"><Link className={pathname === "/ops/pengaturan" ? "active" : ""} href="/ops/pengaturan" title={collapsed ? "Pengaturan" : undefined}><NavIcon name="settings" /><span className="sidebar-label">Pengaturan</span></Link></nav></aside><main className="ops-main"><header className="ops-topbar"><div><span className="ops-topbar-kicker">LUMI · Demo instansi</span><strong>Koordinasi Kalimantan Barat</strong></div><div className="ops-utilities"><span className="session-role">{account.label}</span><ThemeToggle /></div></header>{children}</main></div></>;
+  const active = (href: string) => pathname === href.split("?")[0] && (href.includes("?") ? new URLSearchParams(href.split("?")[1]).get("ruang") === new URLSearchParams(typeof window === "undefined" ? "" : window.location.search).get("ruang") : true);
+  return <><ThemeInit /><div className={`ops-layout${collapsed ? " is-sidebar-collapsed" : ""}`}><aside className="ops-sidebar"><div className="sidebar-brand-row"><Link className="brand" href={account.destination} title="LUMI Ops"><span className="brand-mark" aria-hidden><LumiMark /></span><span className="sidebar-label">LUMI Ops</span></Link><button className="sidebar-collapse icon-button" type="button" onClick={toggleSidebar} aria-label={collapsed ? "Perluas sidebar" : "Ringkas sidebar"} title={collapsed ? "Perluas sidebar" : "Ringkas sidebar"}><NavIcon name={collapsed ? "expand" : "collapse"} /></button></div><p className="muted sidebar-label">Demo lokal · alur lintas instansi</p><nav className="nav ops-navigation" aria-label="Navigasi petugas">{links.map((link) => <Link key={link.href} className={active(link.href) ? "active" : ""} href={link.href} title={collapsed ? link.label : undefined}><NavIcon name={link.icon} /><span className="sidebar-label">{link.label}</span></Link>)}</nav><nav className="nav ops-navigation ops-settings-nav" aria-label="Pengaturan"><Link className={pathname === "/ops/pengaturan" ? "active" : ""} href="/ops/pengaturan" title={collapsed ? "Pengaturan" : undefined}><NavIcon name="settings" /><span className="sidebar-label">Pengaturan</span></Link></nav></aside><main className="ops-main"><header className="ops-topbar"><div><span className="ops-topbar-kicker">LUMI · Demo instansi</span><strong>Koordinasi Kalimantan Barat</strong></div><div className="ops-utilities"><span className="session-role">{account.label}</span><ThemeToggle /></div></header>{children}</main></div></>;
 }

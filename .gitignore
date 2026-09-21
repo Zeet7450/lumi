@@ -2,6 +2,7 @@
 node_modules/
 dist/
 .next*/
+local-demo-data/
 coverage/
 *.tsbuildinfo
 

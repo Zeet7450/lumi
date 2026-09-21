@@ -8,7 +8,7 @@ export function ThemeToggle() {
   function toggle() {
     const next = !dark;
     document.documentElement.dataset.theme = next ? "dark" : "light";
-    window.localStorage.setItem("lumi-theme", next ? "dark" : "light");
+    window.localStorage.setItem("lumi-theme-preference", next ? "dark" : "light");
     setDark(next);
   }
   const label = dark ? "Gunakan tema terang" : "Gunakan tema gelap";

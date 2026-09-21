@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "scripts": {
-    "dev": "pnpm --filter @lumi/web dev --hostname 127.0.0.1",
+    "dev": "node scripts/dev-local-demo.mjs",
     "supabase:start": "supabase start",
     "supabase:status": "supabase status",
     "supabase:stop": "supabase stop",
