@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getLocalDemoAccount } from "@/lib/local-demo-identity";
+import type { DemoRole } from "@/lib/demo-scenario";
 import { LumiMark } from "./brand-marks";
 import { useDemoScenario } from "./demo-scenario-store";
 import { ThemeInit } from "./theme-init";
@@ -23,17 +24,21 @@ function NavIcon({ name }: { name: IconName }) {
   return <svg className="nav-icon" viewBox="0 0 24 24" aria-hidden="true">{paths[name]}</svg>;
 }
 
-const links: Array<{ href: string; label: string; icon: Exclude<IconName, "collapse" | "expand"> }> = [
-  { href: "/ops/insiden", label: "Alur insiden", icon: "incident" },
-  { href: "/ops/publikasi", label: "Persetujuan publik", icon: "publish" },
-  { href: "/ops/simulasi", label: "Simulation Center", icon: "simulator" }
-];
+type NavigationLink = { href: string; label: string; icon: Exclude<IconName, "collapse" | "expand"> };
+
+const linksByRole: Record<Exclude<DemoRole, "WARGA">, readonly NavigationLink[]> = {
+  DLH: [{ href: "/ops/insiden", label: "Lingkungan & observasi", icon: "incident" }],
+  BPBD: [{ href: "/ops/insiden", label: "Insiden & tindakan", icon: "incident" }],
+  APPROVER: [{ href: "/ops/publikasi", label: "Antrean publikasi", icon: "publish" }],
+  SIMULATOR: [{ href: "/ops/simulasi", label: "Simulation Center", icon: "simulator" }]
+};
 
 export function OpsShell({ children }: Readonly<{ children: React.ReactNode; allowed?: unknown }>) {
   const pathname = usePathname();
   const { role } = useDemoScenario();
   const [collapsed, setCollapsed] = useState(false);
   const account = getLocalDemoAccount(role);
+  const links = role === "WARGA" ? [] : linksByRole[role];
   useEffect(() => {
     const stored = window.localStorage.getItem("lumi-ops-sidebar-collapsed");
     if (stored === "true") setCollapsed(true);

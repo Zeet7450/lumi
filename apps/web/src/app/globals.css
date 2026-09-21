@@ -404,25 +404,27 @@ html, body, button, input, select { font-family: Inter, Geist, ui-sans-serif, sy
 html, body { background: var(--canvas); color: var(--ink); }
 input::placeholder { color: var(--placeholder); opacity: 1; }
 .ops-layout { grid-template-columns: 252px minmax(0, 1fr); background: var(--canvas); transition: grid-template-columns 200ms ease; }
-.ops-layout.is-sidebar-collapsed { grid-template-columns: 76px minmax(0, 1fr); }
+.ops-layout.is-sidebar-collapsed { grid-template-columns: 88px minmax(0, 1fr); }
 .ops-sidebar { display: flex; min-width: 0; padding: 18px 14px; border-right: 1px solid var(--line); background: var(--sidebar); color: var(--sidebar-ink); transition: padding 200ms ease, background 200ms ease; }
 .sidebar-brand-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 44px; }
 .ops-sidebar .brand { min-width: 0; padding: 3px 6px; color: var(--sidebar-ink); white-space: nowrap; }
 .ops-sidebar .brand-mark { width: 34px; height: 34px; flex: 0 0 34px; border-radius: 9px; background: #FFFFFF; color: #1E3A5F; }
 .ops-sidebar .muted { margin: 14px 6px 0; padding: 0; color: var(--sidebar-muted); font-size: .76rem; line-height: 1.45; }
 .sidebar-collapse { width: 34px; height: 34px; flex: 0 0 34px; border-color: transparent !important; color: var(--sidebar-ink) !important; }
-.ops-navigation { display: grid !important; gap: 4px; margin-top: 22px !important; }
+.ops-navigation { display: grid !important; gap: 8px; margin-top: 14px !important; }
 .ops-navigation a { display: flex; align-items: center; gap: 11px; min-height: 42px; padding: 10px 11px !important; border: 1px solid transparent !important; border-radius: 8px !important; color: var(--sidebar-muted) !important; font-size: .88rem; font-weight: 700; text-decoration: none; white-space: nowrap; transition: color 180ms ease, background 180ms ease, border-color 180ms ease; }
 .ops-navigation a:hover, .ops-navigation a.active { border-color: transparent !important; background: var(--sidebar-active) !important; color: var(--sidebar-ink) !important; }
 .ops-settings-nav { margin-top: auto !important; padding-top: 18px; border-top: 1px solid color-mix(in srgb, var(--sidebar-muted) 24%, transparent); }
 .nav-icon { width: 19px; height: 19px; flex: 0 0 19px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .ops-layout.is-sidebar-collapsed .ops-sidebar { align-items: center; padding-right: 10px; padding-left: 10px; }
-.ops-layout.is-sidebar-collapsed .sidebar-brand-row { width: 100%; justify-content: center; }
+.ops-layout.is-sidebar-collapsed .sidebar-brand-row { width: 100%; justify-content: space-between; gap: 4px; }
 .ops-layout.is-sidebar-collapsed .ops-sidebar .brand { padding: 0; }
-.ops-layout.is-sidebar-collapsed .sidebar-collapse { position: absolute; top: 58px; z-index: 1; }
+.ops-layout.is-sidebar-collapsed .ops-sidebar .brand-mark { width: 30px; height: 30px; flex-basis: 30px; border-radius: 8px; }
+.ops-layout.is-sidebar-collapsed .sidebar-collapse { position: static; width: 30px; height: 30px; flex-basis: 30px; }
 .ops-layout.is-sidebar-collapsed .ops-navigation { width: 100%; }
 .ops-layout.is-sidebar-collapsed .ops-navigation a { justify-content: center; padding-right: 8px !important; padding-left: 8px !important; }
 .ops-layout.is-sidebar-collapsed .sidebar-label { width: 0; overflow: hidden; opacity: 0; pointer-events: none; transition: opacity 120ms ease; }
+.ops-layout.is-sidebar-collapsed .ops-sidebar > .muted.sidebar-label { display: none; }
 .sidebar-label { transition: opacity 160ms ease; }
 .ops-main { padding: 0 32px 56px; }
 .ops-topbar { min-height: 68px; margin-bottom: 22px; border-color: var(--line); background: var(--canvas); }
@@ -463,6 +465,8 @@ input::placeholder { color: var(--placeholder); opacity: 1; }
 .simulator-shell .session-role { border-color: #3F3F46; background: #0A0A0A; color: #FBBF24; }
 .simulator-shell .text-utility { color: #E4E4E7; }
 .simulator-shell .text-utility:hover { background: #18181B; }
+.simulator-navigation { display: flex; align-items: center; gap: 2px; }
+.simulator-navigation .text-utility { min-height: 36px; font-size: .84rem; }
 
 @media (max-width: 900px) {
   .ops-layout, .ops-layout.is-sidebar-collapsed { grid-template-columns: 208px minmax(0, 1fr); }
@@ -480,4 +484,5 @@ input::placeholder { color: var(--placeholder); opacity: 1; }
   .ops-main { padding: 0 14px 48px; }
   .ops-topbar { margin-bottom: 18px; }
   .settings-logout { align-items: flex-start; flex-direction: column; }
+  .simulator-navigation .text-utility { padding-right: 6px; padding-left: 6px; }
 }
