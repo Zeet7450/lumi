@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getLocalDemoAccount } from "@/lib/local-demo-identity";
 import type { DemoRole } from "@/lib/demo-scenario";
@@ -53,6 +53,7 @@ const linksByRole: Record<Exclude<DemoRole, "WARGA">, readonly NavigationLink[]>
 
 export function OpsShell({ children }: Readonly<{ children: React.ReactNode; allowed?: unknown }>) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { role } = useDemoScenario();
   const [collapsed, setCollapsed] = useState(false);
   const account = getLocalDemoAccount(role);
@@ -69,6 +70,21 @@ export function OpsShell({ children }: Readonly<{ children: React.ReactNode; all
       return next;
     });
   }
-  const active = (href: string) => pathname === href.split("?")[0] && (href.includes("?") ? new URLSearchParams(href.split("?")[1]).get("ruang") === new URLSearchParams(typeof window === "undefined" ? "" : window.location.search).get("ruang") : true);
-  return <><ThemeInit /><div className={`ops-layout${collapsed ? " is-sidebar-collapsed" : ""}`}><aside className="ops-sidebar"><div className="sidebar-brand-row"><Link className="brand" href={account.destination} title="LUMI Ops"><span className="brand-mark" aria-hidden><LumiMark /></span><span className="sidebar-label">LUMI Ops</span></Link><button className="sidebar-collapse icon-button" type="button" onClick={toggleSidebar} aria-label={collapsed ? "Perluas sidebar" : "Ringkas sidebar"} title={collapsed ? "Perluas sidebar" : "Ringkas sidebar"}><NavIcon name={collapsed ? "expand" : "collapse"} /></button></div><p className="muted sidebar-label">Demo lokal · alur lintas instansi</p><nav className="nav ops-navigation" aria-label="Navigasi petugas">{links.map((link) => <Link key={link.href} className={active(link.href) ? "active" : ""} href={link.href} title={collapsed ? link.label : undefined}><NavIcon name={link.icon} /><span className="sidebar-label">{link.label}</span></Link>)}</nav><nav className="nav ops-navigation ops-settings-nav" aria-label="Pengaturan"><Link className={pathname === "/ops/pengaturan" ? "active" : ""} href="/ops/pengaturan" title={collapsed ? "Pengaturan" : undefined}><NavIcon name="settings" /><span className="sidebar-label">Pengaturan</span></Link></nav></aside><main className="ops-main"><header className="ops-topbar"><div><span className="ops-topbar-kicker">LUMI · Demo instansi</span><strong>Koordinasi Kalimantan Barat</strong></div><div className="ops-utilities"><span className="session-role">{account.label}</span><ThemeToggle /></div></header>{children}</main></div></>;
+  const active = (href: string) => pathname === href.split("?")[0] && (!href.includes("?") || new URLSearchParams(href.split("?")[1]).get("ruang") === searchParams.get("ruang"));
+  return <>
+    <ThemeInit />
+    <div className={`ops-layout${collapsed ? " is-sidebar-collapsed" : ""}`}>
+      <aside className="ops-sidebar">
+        <div className="sidebar-brand-row">
+          <Link className="brand" href={account.destination} title="LUMI Ops"><span className="brand-mark" aria-hidden><LumiMark /></span><span className="sidebar-label">LUMI Ops</span></Link>
+          <button className="sidebar-collapse icon-button" type="button" onClick={toggleSidebar} aria-label={collapsed ? "Perluas sidebar" : "Ringkas sidebar"} title={collapsed ? "Perluas sidebar" : "Ringkas sidebar"}><NavIcon name={collapsed ? "expand" : "collapse"} /></button>
+        </div>
+        <nav className="nav ops-navigation" aria-label="Navigasi petugas">
+          {links.map((link) => <Link key={link.href} className={active(link.href) ? "active" : ""} href={link.href} title={collapsed ? link.label : undefined}><NavIcon name={link.icon} /><span className="sidebar-label">{link.label}</span></Link>)}
+        </nav>
+        <nav className="nav ops-navigation ops-settings-nav" aria-label="Pengaturan"><Link className={pathname === "/ops/pengaturan" ? "active" : ""} href="/ops/pengaturan" title={collapsed ? "Pengaturan" : undefined}><NavIcon name="settings" /><span className="sidebar-label">Pengaturan</span></Link></nav>
+      </aside>
+      <main className="ops-main"><header className="ops-topbar"><div><span className="ops-topbar-kicker">LUMI · Demo instansi</span><strong>Koordinasi Kalimantan Barat</strong></div><div className="ops-utilities"><span className="session-role">{account.label}</span><ThemeToggle /></div></header>{children}</main>
+    </div>
+  </>;
 }
