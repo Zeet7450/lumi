@@ -301,7 +301,7 @@ function transitionDemoCommand(state: DemoScenario, command: Exclude<DemoCommand
     case "SET_IMPACT_RADIUS": { requireActor(command.actor, "SIMULATOR"); requireSimulatorControlWindow(state); const next = withSimulation(state, { ...state.simulation, impactRadiusKm: command.impactRadiusKm }); return { ...next, events: appendEvent(next, command, at) }; }
     case "SET_AQI": { requireActor(command.actor, "SIMULATOR"); requireSimulatorControlWindow(state); const next = withSimulation(state, { ...state.simulation, aqiOverride: command.aqi }); return { ...next, events: appendEvent(next, command, at) }; }
     case "SET_PM25": { requireActor(command.actor, "SIMULATOR"); requireSimulatorControlWindow(state); const next = withSimulation(state, { ...state.simulation, pm25Override: command.pm25 }); return { ...next, events: appendEvent(next, command, at) }; }
-    case "SET_SOURCES": { requireActor(command.actor, "SIMULATOR"); requireSimulatorControlWindow(state); if (command.sources.length < 1 || command.sources.length > 3 || !command.sources.every(isSimulationSource)) reject("Sumber simulasi tidak valid."); const first = command.sources[0]!; const simulation = { ...state.simulation, sources: command.sources, sourcePointId: first.sourcePointId, fireHazeStatus: first.eventType === "CUSTOM" ? "FIRE" : first.eventType, impactRadiusKm: Math.max(5, Math.min(20, Math.round(first.radiusMeters / 5_000) * 5)) as ImpactRadius, windDirection: first.windDirection, windSpeed: Math.max(8, Math.min(28, Math.round(first.windSpeed / 10) * 10)) as WindSpeed, fireIntensity: first.intensity as FireIntensity, isPlaying: command.sources.some((source) => source.isPlaying) }; const next = { ...state, simulation, observation: state.observation ? syntheticObservation(simulation) : null }; return { ...next, events: appendEvent(next, command, at) }; }
+    case "SET_SOURCES": { requireActor(command.actor, "SIMULATOR"); requireSimulatorControlWindow(state); if (command.sources.length < 1 || command.sources.length > 3 || !command.sources.every(isSimulationSource)) reject("Sumber simulasi tidak valid."); const first = command.sources[0]!; const nearestWindSpeed = WIND_SPEEDS.reduce((closest, speed) => Math.abs(speed - first.windSpeed) < Math.abs(closest - first.windSpeed) ? speed : closest, WIND_SPEEDS[0]); const simulation = { ...state.simulation, sources: command.sources, sourcePointId: first.sourcePointId, fireHazeStatus: first.eventType === "CUSTOM" ? "FIRE" : first.eventType, impactRadiusKm: Math.max(5, Math.min(20, Math.round(first.radiusMeters / 5_000) * 5)) as ImpactRadius, windDirection: first.windDirection, windSpeed: nearestWindSpeed, fireIntensity: first.intensity as FireIntensity, isPlaying: command.sources.some((source) => source.isPlaying) }; const next = { ...state, simulation, observation: state.observation ? syntheticObservation(simulation) : null }; return { ...next, events: appendEvent(next, command, at) }; }
     case "VALIDATE_ENVIRONMENT": {
       requireActor(command.actor, "DLH"); requireWorkflow(state, "ENVIRONMENT_PENDING");
       return { ...state, workflow: "ENVIRONMENT_VALIDATED", environmentalValidation: { validatedBy: "DLH", validatedAt: at, note: command.note?.trim() || "AQI, PM2.5, arah angin, dan dampak asap telah divalidasi sebagai data uji." }, events: appendEvent(state, command, at) };
@@ -359,12 +359,12 @@ export function isDemoScenario(value: unknown): value is DemoScenario {
 
 /** Pure role-aware transition boundary for the browser-local demo. */
 export function applyDemoCommand(state: DemoScenario, command: DemoCommand, at = new Date().toISOString()): DemoScenario {
-  if (!isDemoScenario(state)) reject("Status skenario lokal tidak valid. Reset skenario sebelum melanjutkan.");
-  if (!isIsoTimestamp(at)) reject("Waktu skenario lokal tidak valid.");
   if (command.type === "RESET_SCENARIO") {
     requireActor(command.actor, "SIMULATOR");
     return initialDemoScenario();
   }
+  if (!isDemoScenario(state)) reject("Status skenario lokal tidak valid. Reset skenario sebelum melanjutkan.");
+  if (!isIsoTimestamp(at)) reject("Waktu skenario lokal tidak valid.");
   return transitionDemoCommand(state, command, at);
 }
 

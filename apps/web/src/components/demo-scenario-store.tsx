@@ -79,9 +79,9 @@ export function DemoScenarioProvider({ children, sessionRole }: Readonly<{ child
     return () => { disposed = true; window.clearInterval(timer); };
   }, []);
   const commit = useCallback((next: DemoScenario) => {
+    const serialized = serializeDemoScenario(next);
     scenarioRef.current = next;
     setScenario(next);
-    const serialized = serializeDemoScenario(next);
     try { window.localStorage.setItem(storageKey, serialized); }
     catch { /* Keep the live demo usable when persistent browser storage is unavailable. */ }
     channel.current?.postMessage(serialized);
