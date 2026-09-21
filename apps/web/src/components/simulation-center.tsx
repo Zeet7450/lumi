@@ -24,6 +24,11 @@ export function SimulationCenter() {
   const setAll = (isPlaying: boolean) => commitSources(sources.map((source) => ({ ...source, isPlaying, updatedAt: new Date().toISOString() })));
   const play = () => { if (!valid) return setError("Radius tiap sumber harus antara 100 m dan 35 km. Nama sumber custom wajib diisi."); setAll(true); if (scenario.workflow === "READY") command({ type: "CREATE_SCENARIO" }); else if (!scenario.simulation.isPlaying) command({ type: "PLAY_SIMULATION" }); };
   const reset = () => { if (window.confirm("Reset skenario akan mengembalikan 50 titik ke kondisi dasar data uji. Lanjutkan?")) command({ type: "RESET_SCENARIO" }); };
+  useEffect(() => {
+    if (!editable || !scenario.simulation.isPlaying) return;
+    const timer = window.setInterval(() => command({ type: "SET_SOURCES", sources: scenario.simulation.sources.map((source) => source.isPlaying ? { ...source, updatedAt: new Date().toISOString() } : source) }), 3_000);
+    return () => window.clearInterval(timer);
+  }, [editable, scenario.simulation.isPlaying, scenario.simulation.sources]);
   return <div className="workflow-console">
     <header className="simulator-intro"><div><p className="eyebrow">SIMULATION MODE · Kalimantan Barat</p><h1>Kebakaran lahan & kabut asap</h1><p>Ruang uji multi-sumber. Semua parameter dan dampak di halaman ini adalah data sintetis.</p></div><span className="workflow-state">{scenario.workflow.replaceAll("_", " ")}</span></header>
     <section className="workflow-scenario-card"><div><p className="eyebrow">Ringkasan sebelum jalan</p><h2>{sources.length} titik sumber · {sources.map((source) => metersLabel(source.radiusMeters)).join(", ")}</h2><p>{sources.map((source) => `Angin ${source.windDirection} ${source.windSpeed} km/jam`).join(" · ")} · Estimasi {affected} dari 50 titik terdampak.</p></div><div className="workflow-facts"><span>AQI<strong>{scenario.observation?.aqi ?? "–"}</strong></span><span>PM2.5<strong>{scenario.observation ? `${scenario.observation.pm25} µg/m³` : "–"}</strong></span><span>Pembaruan<strong>{scenario.createdAt ? "3 dtk" : "Belum aktif"}</strong></span></div></section>

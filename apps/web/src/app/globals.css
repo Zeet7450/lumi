@@ -135,6 +135,34 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .ops-grid { grid-template-columns: 1fr; }
 }
 
+.warga-page { min-height: 100vh; background: var(--canvas); color: var(--ink); }
+.warga-header { max-width: 1240px; min-height: 72px; margin: auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; gap: 20px; border-bottom: 1px solid var(--line); }
+.warga-header .brand { border: 0; background: transparent; color: var(--brand-deep); font: inherit; font-weight: 800; cursor: pointer; }
+.warga-header nav { display: flex; align-items: center; gap: 8px; }
+.warga-header nav > button:not(.button) { border: 0; background: transparent; color: var(--muted); padding: 9px; cursor: pointer; }
+.warga-hero, .warga-story, .warga-notice, .warga-form { max-width: 1240px; margin: auto; padding: 52px 24px; }
+.warga-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(380px, .9fr); align-items: center; gap: 48px; border-bottom: 1px solid var(--line); }
+.warga-hero h1 { max-width: 650px; margin: 0; color: var(--brand-deep); font-size: clamp(2.5rem, 5vw, 4.8rem); letter-spacing: -.055em; line-height: .98; }
+.warga-hero p { max-width: 620px; margin: 22px 0; color: var(--muted); font-size: 1.08rem; line-height: 1.7; }
+.warga-coverage { width: 100%; fill: color-mix(in srgb, var(--brand) 18%, var(--surface)); stroke: var(--brand); stroke-width: 2; }
+.warga-coverage circle { fill: #f59e0b; stroke: var(--surface); stroke-width: 4; }
+.warga-coverage text { fill: var(--brand-deep); stroke: none; font-size: 14px; font-weight: 700; }
+.warga-disclaimer { max-width: 1240px; margin: 20px auto 0; padding: 12px 24px; color: var(--muted); font-size: .88rem; }
+.warga-story { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 20px; }
+.warga-story article { padding: 24px; border-top: 3px solid var(--brand); background: var(--surface); }
+.warga-story article:nth-child(2) { border-top-color: #eab308; } .warga-story article:nth-child(3) { border-top-color: #ea580c; }
+.warga-story h2 { margin: 0 0 10px; color: var(--brand-deep); } .warga-story p { margin: 0; color: var(--muted); line-height: 1.6; }
+.warga-notice { margin-top: 12px; margin-bottom: 60px; background: var(--surface); border: 1px solid var(--line); }
+.warga-notice p { color: var(--muted); line-height: 1.6; } .warga-notice strong { color: #c2410c; }
+.warga-form { display: grid; grid-template-columns: .85fr 1.15fr; gap: 52px; align-items: start; }
+.warga-form h1 { margin: 8px 0; color: var(--brand-deep); font-size: clamp(2rem, 4vw, 3.5rem); letter-spacing: -.04em; } .warga-form > div > p { color: var(--muted); line-height: 1.6; }
+.warga-form form, .warga-form > div:last-child { display: grid; gap: 16px; padding: 24px; border: 1px solid var(--line); background: var(--surface); }
+.warga-form label { display: grid; gap: 7px; color: var(--ink); font-weight: 700; } .warga-form input, .warga-form select, .warga-form textarea { min-height: 44px; padding: 10px; border: 1px solid var(--line); border-radius: 7px; background: var(--surface-raised); color: var(--ink); font: inherit; } .warga-form textarea { min-height: 110px; resize: vertical; }
+.google-button { min-height: 44px; border: 1px solid var(--line); background: var(--surface-raised); color: var(--ink); font-weight: 700; cursor: pointer; } .google-button:first-letter { color: #4285f4; font-weight: 900; }
+.report-previews { display: flex; gap: 10px; flex-wrap: wrap; }.report-previews img { width: 88px; height: 70px; object-fit: cover; border: 1px solid var(--line); }
+.my-reports { grid-column: 2; }.my-reports article { display: flex; justify-content: space-between; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--line); }.my-reports span { color: var(--muted); }.warga-message { position: fixed; right: 20px; bottom: 20px; max-width: 420px; padding: 12px 15px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); box-shadow: var(--shadow-sm); }
+@media (max-width: 760px) { .warga-header { padding: 0 14px; } .warga-header nav > button:not(.button) { display: none; } .warga-hero, .warga-form { grid-template-columns: 1fr; padding: 32px 16px; gap: 26px; } .warga-story { grid-template-columns: 1fr; padding: 24px 16px; } .warga-notice { margin-right: 16px; margin-left: 16px; padding: 22px 16px; } .my-reports { grid-column: auto; } }
+
 /* Local-demo access and operations map: functional hierarchy stays above decoration. */
 :root[data-theme="dark"] {
   --canvas: #111827;

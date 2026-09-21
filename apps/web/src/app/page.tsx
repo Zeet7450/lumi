@@ -2,9 +2,11 @@ import Link from "next/link";
 import { LumiMark } from "@/components/brand-marks";
 import { LocalDemoLogin } from "@/components/local-demo-login";
 import { redirect } from "next/navigation";
+import { WargaPortal } from "@/components/warga-portal";
 
 export default function HomePage() {
   if (process.env.LUMI_ENTRY === "ops" || process.env.LUMI_ENTRY === "simulator") redirect("/ops/login");
+  if (process.env.LUMI_ENTRY === "warga") return <WargaPortal />;
   return <main className="entry-page">
     <header className="entry-topbar">
       <Link className="brand" href="/"><span className="brand-mark" aria-hidden><LumiMark /></span><span>LUMI</span></Link>
