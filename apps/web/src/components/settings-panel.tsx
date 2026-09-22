@@ -16,10 +16,13 @@ export function SettingsPanel({ audience }: { audience: "petugas" | "warga" }) {
   const [hydrated, setHydrated] = useState(false);
   useEffect(() => {
     const stored = window.localStorage.getItem(`${key}-${audience}`);
-    if (stored) setSettings({ ...defaults, ...JSON.parse(stored) as Settings });
-    else {
-      const theme = window.localStorage.getItem("lumi-theme-preference");
-      if (theme === "system" || theme === "light" || theme === "dark") setSettings((current) => ({ ...current, theme }));
+    const preference = window.localStorage.getItem("lumi-theme-preference");
+    const theme = preference === "system" || preference === "light" || preference === "dark" ? preference : "system";
+    try {
+      const saved = stored ? JSON.parse(stored) as Partial<Settings> : {};
+      setSettings({ ...defaults, ...saved, theme });
+    } catch {
+      setSettings({ ...defaults, theme });
     }
     setHydrated(true);
   }, [audience]);
