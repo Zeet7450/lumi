@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { incidentLabel } from "@/lib/demo-scenario";
 import { useDemoScenario } from "./demo-scenario-store";
 import { OperationalMap } from "./operational-map";
 
@@ -11,11 +12,15 @@ export function IncidentsBoard() {
   const [error, setError] = useState("");
   const perform = (type: "VALIDATE_ENVIRONMENT" | "VERIFY_INCIDENT" | "RECORD_RESPONSE") => {
     try { setError(""); run({ type }); }
-    catch (reason) { setError(reason instanceof Error ? reason.message : "Tindakan demo tidak dapat dijalankan."); }
+    catch (reason) { setError(reason instanceof Error ? reason.message : "Tindakan ini tidak dapat dijalankan."); }
   };
   const readyForDlh = scenario.workflow === "ENVIRONMENT_PENDING";
   const readyForVerify = scenario.workflow === "ENVIRONMENT_VALIDATED";
   const readyForResponse = scenario.workflow === "INCIDENT_VERIFIED";
+  // One honest state bar: while a scenario is running, DLH and BPBD must see
+  // WHICH event is active and a visible red alert, not just a status word.
+  const incidentActive = scenario.workflow !== "READY";
+  const eventBanner = incidentActive ? <div className="incident-alert" role="status"><span className="incident-alert-dot" aria-hidden /><div><strong>KEJADIAN AKTIF · {incidentLabel(scenario.simulation).toUpperCase()}</strong><span>{scenario.simulation.sources.map((source) => source.isPlaying ? "berjalan" : "dijeda").join(" · ")} · {scenario.simulation.windDirection} {scenario.simulation.windSpeed} km/jam · radius {Math.round(scenario.simulation.impactRadiusKm)} km</span></div><span className="incident-alert-state">{scenario.workflow.replaceAll("_", " ")}</span></div> : null;
   const requestedRoom = searchParams.get("ruang");
   const room = role === "DLH"
     ? requestedRoom === "validasi" || requestedRoom === "riwayat" ? requestedRoom : "lingkungan"
@@ -37,6 +42,7 @@ export function IncidentsBoard() {
   const status = <section className="workflow-history"><p className="eyebrow">Status lintas instansi</p><ol><li><strong>Lingkungan</strong><span>{scenario.environmentalValidation ? "Tervalidasi DLH" : "Menunggu validasi DLH"}</span></li><li><strong>Insiden</strong><span>{scenario.incident ? "Terverifikasi BPBD" : "Menunggu verifikasi BPBD"}</span></li><li><strong>Respons</strong><span>{scenario.response ? "Tindakan dicatat BPBD" : "Menunggu tindakan BPBD"}</span></li></ol></section>;
   return <section className="workflow-board">
     <header className="ops-header"><div><p className="eyebrow">Antrean keputusan · {scenario.region.province}</p><h1>{title}</h1><p className="muted">{description}</p></div><span className="badge tier-verify">{scenario.workflow.replaceAll("_", " ")}</span></header>
+    {eventBanner}
     {(room === "lingkungan" || room === "situasi") ? <OperationalMap /> : null}
     {room === "validasi" ? (scenario.observation ? validation : waiting) : null}
     {room === "riwayat" ? history : null}

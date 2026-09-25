@@ -16,7 +16,7 @@ const send = (req, res, code, body) => { res.writeHead(code, { "content-type": "
 const persist = async () => writeFile(file, JSON.stringify(state), { mode: 0o600 });
 
 createServer(async (req, res) => {
-  if (req.method === "OPTIONS") { res.writeHead(204, { "access-control-allow-origin": allowedOrigin(req), "access-control-allow-methods": "GET,POST" }); return res.end(); }
+  if (req.method === "OPTIONS") { res.writeHead(204, { "access-control-allow-origin": allowedOrigin(req), "access-control-allow-methods": "GET,POST", "access-control-allow-headers": "content-type" }); return res.end(); }
   if (req.url === "/health") return send(req, res, 200, { ok: true, synthetic: true });
   if (req.url === "/state" && req.method === "GET") return send(req, res, 200, state);
   if (req.url === "/state" && req.method === "POST") {
@@ -39,7 +39,11 @@ createServer(async (req, res) => {
         await writeFile(join(uploads, name), Buffer.from(encoded, "base64"), { mode: 0o600 });
         imageNames.push(name);
       }
-      state.reports = [...(state.reports ?? []), { id, synthetic: true, createdAt: new Date().toISOString(), status: "Menunggu verifikasi", category: String(report.category ?? "Kondisi lingkungan"), location: report.location, description: report.description.trim(), citizen: String(report.citizen ?? "Warga demo"), images: imageNames, queue: /asap|udara/i.test(String(report.category)) ? "DLH" : "BPBD" }];
+      // Reports are provincial: queue names the agency AND province so each
+      // BPBD/DLH command center only ever sees its own province's inbox.
+      const province = typeof report.province === "string" && report.province.trim() ? report.province.trim() : "Kalimantan Barat";
+      const queueAgency = /asap|udara/i.test(String(report.category ?? "")) ? "DLH" : "BPBD";
+      state.reports = [...(state.reports ?? []), { id, synthetic: true, createdAt: new Date().toISOString(), status: "Menunggu verifikasi", category: String(report.category ?? "Kondisi lingkungan"), location: report.location, province, description: report.description.trim(), citizen: String(report.citizen ?? "Warga demo"), images: imageNames, queue: queueAgency, queueProvince: province, queueLabel: `${queueAgency} ${province}` }];
       await persist(); return send(req, res, 201, { ok: true, id });
     } catch { return send(req, res, 400, { error: "Laporan demo tidak dapat dibaca." }); }
   }

@@ -1,28 +1,233 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { motion, useInView, useMotionValue, useSpring, useTransform } from "motion/react";
 import { LumiMark } from "./brand-marks";
-import { demoReferencePoints } from "@/lib/demo-locations";
-import type { PublicDemoNotice } from "@/lib/demo-scenario";
-import { WargaHeroMap } from "./warga-hero-map";
+import { NationalIspuMap } from "./national-ispu-map";
+import { IntroReveal } from "./warga-intro";
+import type { CitizenPoint } from "@/lib/citizen-points";
+import { dashboardPath, readSession } from "@/lib/warga-session";
 
-const bridge = "http://127.0.0.1:3100";
-type Report = { id: string; status: string; category: string; location: string; description: string; createdAt: string; citizen: string };
+/**
+ * Citizen landing page. Visual layer is built on Motion for React (the
+ * animation engine behind motion.dev): spring-driven reveals, a scroll-linked
+ * underline, and a number that counts itself. Content styling uses the same
+ * --warga-* tokens as before; what changed is how things arrive and how the
+ * footer is laid out. Reduced-motion users get static content via CSS.
+ */
 
-export function WargaPortal() {
-  const [view, setView] = useState<"home" | "login" | "setup" | "report">("home");
-  const [email, setEmail] = useState(""); const [loggedIn, setLoggedIn] = useState(false);
-  const [area, setArea] = useState(""); const [notice, setNotice] = useState<PublicDemoNotice | null>(null); const [reports, setReports] = useState<Report[]>([]); const [images, setImages] = useState<string[]>([]); const [message, setMessage] = useState("");
-  const refresh = async () => { try { const data = await (await fetch(`${bridge}/state`, { cache: "no-store" })).json(); const first = Array.isArray(data.notices) ? data.notices[0] : null; setNotice(first); setReports(Array.isArray(data.reports) ? data.reports.filter((report: Report) => !email || report.citizen === email) : []); } catch { setMessage("Informasi resmi sedang disiapkan. Halaman tetap dapat Anda jelajahi sambil koneksi lokal pulih."); } };
-  useEffect(() => { void refresh(); const timer = window.setInterval(() => void refresh(), 3_000); return () => window.clearInterval(timer); }, [email]);
-  const selected = useMemo(() => demoReferencePoints.find((point) => point.id === area), [area]);
-  const login = (event: FormEvent<HTMLFormElement>) => { event.preventDefault(); if (!email.includes("@") || !(event.currentTarget.elements.namedItem("password") as HTMLInputElement).value) return setMessage("Masukkan email dan kata sandi untuk demo warga."); setLoggedIn(true); setView(area ? "home" : "setup"); setMessage(""); };
-  const files = (input: FileList | null) => { if (!input) return; const next = Array.from(input).slice(0, 3); Promise.all(next.map((file) => new Promise<string>((resolve) => { const reader = new FileReader(); reader.onload = () => resolve(String(reader.result)); reader.readAsDataURL(file); }))).then(setImages); };
-  const submit = async (event: FormEvent<HTMLFormElement>) => { event.preventDefault(); const form = new FormData(event.currentTarget); const response = await fetch(`${bridge}/reports`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ citizen: email, category: form.get("category"), location: selected?.name ?? area, description: form.get("description"), images }) }); setMessage(response.ok ? "Laporan dikirim ke antrean internal untuk verifikasi." : "Laporan belum dapat dikirim. Periksa isian lalu coba lagi."); if (response.ok) { setImages([]); event.currentTarget.reset(); void refresh(); } };
-  return <main className="warga-page"><header className="warga-header"><button type="button" className="brand warga-brand" onClick={() => setView("home")}><span className="brand-mark"><LumiMark /></span>LUMI Warga</button><nav><button type="button" onClick={() => document.getElementById("cara-kerja")?.scrollIntoView({ behavior: "smooth" })}>Cara kerja</button><button type="button" onClick={() => setView("report")}>Laporkan kondisi</button><button type="button" onClick={() => setView("login")}>{loggedIn ? "Akun warga" : "Masuk"}</button><button className="button" type="button" onClick={() => setView("login")}>Daftar warga</button></nav></header>
-    {view === "home" && <><section className="warga-hero"><div className="warga-hero-copy"><h1>Tahu kondisi lingkungan di wilayahmu.</h1><p>Terima informasi yang telah diverifikasi, pahami langkah yang perlu dilakukan, dan bantu petugas melalui laporan kondisi di sekitarmu.</p><div className="button-row"><button className="button" type="button" onClick={() => loggedIn ? setView("setup") : setView("login")}>Lihat kondisi wilayah</button><button className="button secondary" type="button" onClick={() => setView("report")}>Laporkan kondisi</button></div></div><WargaHeroMap /></section><section className="warga-coverage-strip"><strong>LUMI menghubungkan pemantauan lingkungan, verifikasi petugas, dan informasi publik.</strong><span>Demo ini memakai data sintetis dengan cakupan aktif Kalimantan Barat.</span></section><section id="cara-kerja" className="warga-story"><div className="warga-section-head"><p>ALUR INFORMASI</p><h2>Informasi yang berguna, sebelum dan sesudah verifikasi.</h2></div><article><span>01</span><h2>Pantau</h2><p>Data lingkungan dipantau sebagai sinyal awal kondisi di sekitar wilayah.</p></article><article><span>02</span><h2>Verifikasi</h2><p>Petugas DLH dan BPBD memeriksa dampak lingkungan dan respons yang diperlukan.</p></article><article><span>03</span><h2>Informasikan</h2><p>Warga menerima informasi resmi hanya setelah disetujui manusia.</p></article></section><section className="warga-report-story"><div><p>LAPORAN WARGA</p><h2>Sampaikan kondisi, biarkan petugas memeriksa faktanya.</h2><p>Warga dapat mengirim lokasi, deskripsi singkat, dan hingga tiga foto. Setiap laporan tetap menjadi bukti internal sampai diverifikasi.</p><button className="button" type="button" onClick={() => setView("report")}>Laporkan kondisi</button></div><div className="warga-form-preview"><strong>Laporan kondisi</strong><span>Lokasi terpilih</span><i /><span>Deskripsi singkat</span><i /><small>Tambahkan sampai tiga foto</small></div></section><section className="warga-location-story"><div><p>WILAYAH UTAMA</p><h2>Informasi yang lebih relevan dengan lokasi Anda.</h2></div><ol><li>Gunakan lokasi saat ini.</li><li>Pilih titik pada peta.</li><li>Cari wilayah administratif Kalimantan Barat.</li></ol><p>LUMI memprioritaskan informasi resmi terbaru di sekitar area pilihan Anda.</p></section>{notice ? <section className="warga-notice"><p>Informasi resmi terverifikasi</p><h2>{notice.region.name}, {notice.region.province}</h2><strong>AQI {notice.notice.aqi} · PM2.5 {notice.notice.pm25} µg/m³</strong><p>{notice.notice.text}</p><small>Diterbitkan setelah persetujuan manusia dalam demo lokal.</small></section> : <section className="warga-notice"><h2>Belum ada informasi resmi</h2><p>Informasi publik hanya muncul setelah Simulator, DLH, BPBD, dan Approver menyelesaikan alur persetujuan.</p></section>}<section className="warga-final-cta"><h2>Mulai pantau wilayahmu</h2><p>Pilih wilayah utama untuk melihat informasi yang telah diverifikasi.</p><div className="button-row"><button className="button" type="button" onClick={() => setView("login")}>Mulai pantau wilayahmu</button><button className="button secondary" type="button" onClick={() => setView("report")}>Buat laporan kondisi</button></div></section><footer className="warga-footer"><div><span className="brand-mark"><LumiMark /></span><p>LUMI membantu warga memahami informasi lingkungan yang telah diverifikasi.</p></div><nav><button type="button" onClick={() => document.getElementById("cara-kerja")?.scrollIntoView({ behavior: "smooth" })}>Cara kerja</button><button type="button" onClick={() => setView("home")}>Informasi</button><button type="button" onClick={() => setView("report")}>Laporkan kondisi</button></nav><small>Kontak demo: kontak@lumi.demo.id<br />© 2026 LUMI</small></footer></>}
-    {view === "login" && <section className="warga-form"><div><p>AKUN WARGA DEMO</p><h1>Masuk atau daftar untuk memilih wilayah.</h1><p>Akun petugas tidak dapat dibuat dari halaman ini.</p></div><form onSubmit={login}><label>Email<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="nama@email.id" required /></label><label>Kata sandi<input name="password" type="password" required /></label><button className="google-button" type="button" onClick={() => setMessage("Login Google memerlukan konfigurasi OAuth lokal. Tidak ada sesi demo yang dibuat.")}>G <span>Lanjutkan dengan Google</span></button><button className="button" type="submit">Lanjutkan</button></form></section>}
-    {view === "setup" && <section className="warga-form"><div><p>LOKASI UTAMA</p><h1>Pilih wilayah demo Anda.</h1><p>Anda dapat menggunakan izin lokasi browser, atau memilih salah satu titik referensi Kalimantan Barat.</p></div><div><button className="button secondary" onClick={() => navigator.geolocation?.getCurrentPosition(() => setMessage("Lokasi saat ini digunakan sebagai perkiraan. Pilih titik referensi untuk informasi demo."), () => setMessage("Izin lokasi belum tersedia. Pilih wilayah secara manual."))}>Gunakan lokasi saat ini</button><label>Pilih wilayah<select value={area} onChange={(event) => setArea(event.target.value)}><option value="">Pilih titik referensi</option>{demoReferencePoints.map((point) => <option key={point.id} value={point.id}>{point.name}, {point.kabupaten}</option>)}</select></label><button className="button" disabled={!area} onClick={() => setView("home")}>Simpan wilayah</button></div></section>}
-    {view === "report" && <section className="warga-form"><div><p>LAPORAN WARGA</p><h1>Bagikan kondisi di sekitar Anda.</h1><p>Laporan dan foto masuk sebagai bukti internal, bukan informasi resmi atau fakta yang telah diverifikasi.</p></div><form onSubmit={submit}><label>Kategori<select name="category"><option>Kondisi udara/asap</option><option>Api atau asap terlihat</option><option>Permintaan bantuan</option></select></label><label>Lokasi<select value={area} onChange={(event) => setArea(event.target.value)} required><option value="">Pilih lokasi</option>{demoReferencePoints.map((point) => <option key={point.id} value={point.id}>{point.name}, {point.kabupaten}</option>)}</select></label><label>Deskripsi singkat<textarea name="description" minLength={8} maxLength={500} required /></label><label>Foto, maksimal tiga<input type="file" accept="image/png,image/jpeg,image/webp" multiple onChange={(event) => files(event.target.files)} /></label>{images.length ? <div className="report-previews">{images.map((image) => <img src={image} key={image} alt="Pratinjau foto laporan" />)}</div> : null}<button className="button" type="submit">Kirim untuk verifikasi</button></form>{reports.length ? <div className="my-reports"><h2>Laporan saya</h2>{reports.map((report) => <article key={report.id}><strong>{report.category}</strong><span>{report.location} · {report.status}</span></article>)}</div> : null}</section>}
-    {message ? <p className="warga-message" role="status">{message}</p> : null}</main>;
+/** A lived-day beat. Concrete and generic: no invented dates or places. */
+const HAZE_DAY: Array<{ time: string; line: string }> = [
+  { time: "Pagi", line: "Mata perih. Bau asap masuk dari celah jendela." },
+  { time: "Siang", line: "Jalan ke depan tertutup kabut. Anak diminta pulang lebih awal." },
+  { time: "Sore", line: "Grup chat ramai. Satu bilang aman, satu bilang jangan keluar rumah." },
+  { time: "Malam", line: "Rumor bertambah. Kepastian tidak." }
+];
+
+const STEPS: Array<{ title: string; text: string }> = [
+  { title: "Sensor mendeteksi", text: "Titik pemantauan mencatat sinyal awal kondisi udara di sekitar wilayah." },
+  { title: "BPBD memverifikasi", text: "Badan penanggulangan bencana memastikan sinyal itu benar dan layak ditindaklanjuti." },
+  { title: "DLH memantau udara", text: "Petugas lingkungan memantau kualitas udara dan kondisi lapangan." },
+  { title: "Informasi disebar", text: "Bersama Diskominfo, informasi resmi dikirim ke web warga dan notifikasi ponsel." },
+  { title: "Anda menerima", text: "Sampai lengkap: seberapa parah, di mana, dan apa yang perlu Anda lakukan." }
+];
+
+const OUTCOMES: Array<{ title: string; text: string }> = [
+  { title: "Kejelasan, bukan rumor", text: "Informasi yang sampai ke Anda selalu lewat pemeriksaan petugas, lengkap dengan angka kualitas udara dan saran yang bisa langsung dipraktikkan." },
+  { title: "Peringatan lebih awal", text: "Saat asap berpotensi mengganggu, Anda tahu dari aplikasi sebelum mata terasa perih, bukan sebaliknya." },
+  { title: "Suara warga didengar", text: "Laporan kondisi dari Anda menjadi bukti yang diperiksa petugas, bukan pesan yang hilang di grup." },
+  { title: "Instansi bisa diaudit", text: "Setiap langkah, dari deteksi sampai penyelesaian, tercatat. Anda bisa melihat siapa memverifikasi apa dan kapan." }
+];
+
+const ROLES: Array<{ title: string; text: string }> = [
+  { title: "Laporkan kondisi", text: "Lihat asap atau kebakaran? Kirim laporan dengan foto dan lokasi dari ponsel Anda. Petugas akan memeriksa." },
+  { title: "Terima info resmi", text: "Notifikasi sampai ke ponsel saat ada kejadian di wilayah Anda. Sumbernya jelas, isinya bisa dipercaya." },
+  { title: "Pantau terus", text: "Peta udara dan hotspot terbuka kapan saja. Cek kondisi wilayah sebelum beraktivitas di luar." }
+];
+
+/** Scroll-triggered spring reveal; hover lifts only where it means something. */
+function Reveal({ children, delay = 0, y = 22, className }: { children: React.ReactNode; delay?: number; y?: number; className?: string }) {
+  return <motion.div
+    className={className}
+    initial={{ opacity: 0, y }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: "0px 0px -12% 0px" }}
+    transition={{ type: "spring", stiffness: 90, damping: 18, delay }}
+  >{children}</motion.div>;
+}
+
+/** Counter that ticks up to its value the first time it scrolls into view. */
+function CountUp({ value }: { value: number }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, margin: "0px 0px -10% 0px" });
+  const raw = useMotionValue(0);
+  const spring = useSpring(raw, { stiffness: 60, damping: 20 });
+  const text = useTransform(spring, (latest) => String(Math.round(latest)));
+  useEffect(() => { if (inView) raw.set(value); }, [inView, raw, value]);
+  return <span ref={ref}><motion.span>{text}</motion.span></span>;
+}
+
+export function WargaPortal({ points }: { points: CitizenPoint[] }) {
+  const router = useRouter();
+
+  const provinces = useMemo(() => [...new Set(points.map((point) => point.province))].sort(), [points]);
+
+  // An authenticated citizen never sits on the landing page.
+  useEffect(() => {
+    const existing = readSession();
+    if (existing) router.replace(dashboardPath(existing.region));
+  }, [router]);
+
+  return <main className="warga-page">
+    <IntroReveal />
+    <header className="warga-header">
+      <Link className="brand warga-brand" href="/">
+        <span className="brand-mark"><LumiMark /></span>LUMI Warga
+      </Link>
+      <nav>
+        <Link className="warga-nav-link" href="/masuk">Masuk</Link>
+        <Link className="button" href="/daftar">Daftar</Link>
+      </nav>
+    </header>
+
+    {/* Hero. Hook first: name the feeling, promise the fix, then prove it with
+        the live count. The accent word's underline draws itself on load. */}
+    <section className="landing-hero" aria-labelledby="warga-h1">
+      <motion.div
+        initial={{ opacity: 0, y: 26 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ type: "spring", stiffness: 80, damping: 18 }}
+        style={{ display: "grid", gap: 26 }}
+      >
+        <p className="landing-hero-chip"><i aria-hidden="true" />Pemantauan aktif di {provinces.length} provinsi Kalimantan</p>
+        <h1 id="warga-h1">Udara di luar sedang apa?<br /><span className="landing-hero-underline">Buka, langsung tahu.</span></h1>
+        <p className="landing-hero-sub">Kabut asap datang tiap tahun, tetapi keputusan Anda tidak harus menunggu rumor. LUMI menunjukkan kondisi udara dan titik api di sekitar Anda, diperiksa petugas sebelum sampai ke layar Anda.</p>
+        <div className="landing-hero-actions">
+          <Link className="button" href="/daftar">Mulai pantau sekarang</Link>
+          <Link className="warga-nav-link" href="/masuk">Saya sudah punya akun</Link>
+        </div>
+        <p className="landing-hero-count"><strong>{points.length ? <CountUp value={points.length} /> : 0}</strong> titik pemantauan aktif yang bisa Anda telusuri di bawah ini</p>
+      </motion.div>
+    </section>
+
+    {/* The lived haze day: alternating cards slide in from opposite sides. */}
+    <section className="landing-day" aria-label="Cerita satu hari berkabut">
+      <p className="landing-day-title">Satu hari ketika asap datang</p>
+      <ul className="landing-day-list">
+        {HAZE_DAY.map((moment, index) => <Reveal key={moment.time} delay={index * 0.06}>
+          <li>
+            <span className="landing-day-time">{moment.time}</span>
+            <p>{moment.line}</p>
+          </li>
+        </Reveal>)}
+      </ul>
+      <Reveal delay={0.1}>
+        <p className="landing-day-close">Hari itu, semua orang tahu ada asap. <strong>Yang tidak ada: satu tempat untuk percaya.</strong> Sampai sekarang.</p>
+      </Reveal>
+    </section>
+
+    {/* The live map, full-bleed, citizen style: clean frame, no ops toolbar. */}
+    <section className="warga-map-section" aria-label="Peta titik pemantauan">
+      <div className="warga-map-section-head">
+        <p className="warga-eyebrow">PETA HIDUP</p>
+        <h2>Titik pemantauan yang aktif sekarang.</h2>
+        <p className="warga-map-sub">Bukan gambar. Peta yang sama dengan yang dipakai petugas, diperbarui terus, bisa Anda telusuri per provinsi.</p>
+      </div>
+      <NationalIspuMap citizen />
+    </section>
+
+    {/* Five compact steps, revealed one after another. */}
+    <section className="landing-steps" id="cara-kerja" aria-label="Cara kerja LUMI">
+      <Reveal>
+        <div className="landing-cards-head">
+          <p className="warga-eyebrow">CARA KERJANYA</p>
+          <h2>Dari sinyal awal sampai informasi sampai ke Anda.</h2>
+        </div>
+      </Reveal>
+      <div className="landing-steps-grid">
+        {STEPS.map((step, index) => <Reveal key={step.title} delay={index * 0.08}>
+          <article className="landing-step">
+            <span className="landing-step-num">{index + 1}</span>
+            <h3>{step.title}</h3>
+            <p>{step.text}</p>
+          </article>
+        </Reveal>)}
+      </div>
+    </section>
+
+    <section className="landing-outcomes" aria-label="Yang berubah dengan LUMI">
+      <Reveal>
+        <div className="landing-cards-head">
+          <p className="warga-eyebrow">YANG BERUBAH</p>
+          <h2>Setelah ada LUMI.</h2>
+        </div>
+      </Reveal>
+      <div className="landing-outcomes-grid">
+        {OUTCOMES.map((item, index) => <Reveal key={item.title} delay={index * 0.06}>
+          <article><strong>{item.title}</strong><p>{item.text}</p></article>
+        </Reveal>)}
+      </div>
+    </section>
+
+    <section className="landing-roles" aria-label="Peran Anda">
+      <Reveal>
+        <div className="landing-cards-head">
+          <p className="warga-eyebrow">PERAN ANDA</p>
+          <h2>Sistem ini hidup kalau warganya ikut.</h2>
+        </div>
+      </Reveal>
+      <div className="landing-roles-grid">
+        {ROLES.map((item, index) => <Reveal key={item.title} delay={index * 0.08}>
+          <article>
+            <span className="landing-role-badge">{index + 1}</span>
+            <h3>{item.title}</h3>
+            <p>{item.text}</p>
+          </article>
+        </Reveal>)}
+      </div>
+    </section>
+
+    {/* Closing CTA. */}
+    <section className="warga-final-cta">
+      <Reveal>
+        <h2>Mulai pantau wilayah Anda.</h2>
+        <p>Daftar sekali. Selebihnya, LUMI yang menjaga informasinya sampai ke Anda.</p>
+        <div className="button-row button-row-center">
+          <Link className="button" href="/daftar">Daftar sekarang</Link>
+          <Link className="warga-nav-link" href="/masuk">Saya sudah punya akun</Link>
+        </div>
+      </Reveal>
+    </section>
+
+    {/* Footer: bento band, revealed in a soft cascade. */}
+    <footer className="landing-footer">
+      <div className="landing-footer-inner">
+        <Reveal>
+          <div className="landing-footer-brand">
+            <span className="brand-mark"><LumiMark /></span>
+            <p><strong>LUMI</strong> adalah layanan informasi lingkungan untuk warga Indonesia: memantau kualitas udara dan titik api, lalu menyampaikannya dengan bahasa yang bisa dipahami semua orang.</p>
+          </div>
+        </Reveal>
+        <Reveal delay={0.08}>
+          <nav className="landing-footer-links" aria-label="Tautan resmi">
+            <p className="landing-footer-head">Instansi terkait</p>
+            <a href="https://www.klhk.go.id" target="_blank" rel="noreferrer">KLH (Kementerian Lingkungan Hidup)</a>
+            <a href="https://bnpb.go.id" target="_blank" rel="noreferrer">BNPB (Badan Nasional Penanggulangan Bencana)</a>
+            <a href="https://www.komdigi.go.id" target="_blank" rel="noreferrer">Kementerian Komunikasi dan Digital</a>
+            <a href="https://www.bmkg.go.id" target="_blank" rel="noreferrer">BMKG (Meteorologi, Klimatologi, dan Geofisika)</a>
+          </nav>
+        </Reveal>
+        <Reveal delay={0.16}>
+          <div className="landing-footer-contact">
+            <p className="landing-footer-head">Kontak</p>
+            <a href="mailto:kontak@lumi.id">kontak@lumi.id</a>
+            <small>LUMI bersifat demo untuk keperluan pengembangan. Data yang tampil adalah simulasi.</small>
+          </div>
+        </Reveal>
+      </div>
+      <p className="landing-footer-legal"><span>© 2026 LUMI · Layanan informasi lingkungan publik untuk Indonesia</span><span>Data uji, bukan kondisi nyata</span></p>
+    </footer>
+  </main>;
 }

@@ -138,7 +138,7 @@ export async function login(email: string, password: string): Promise<{ actor: A
     return { actor, preview: false };
   } catch (error) {
     if (error instanceof Error && error.message.startsWith("Akun warga")) throw error;
-    if (String(error).includes("401")) throw new Error("Email demo atau kata sandi tidak sesuai.");
+    if (String(error).includes("401")) throw new Error("Email atau kata sandi tidak sesuai.");
     const role = (email.startsWith("koordinator.bpbd") ? "BPBD" : email.startsWith("approver.diskominfo") ? "DISKOMINFO" : email.startsWith("simulator") ? "ADMIN_DEMO" : "DLH") as Role;
     return { actor: { userId: "preview-user", role }, preview: true };
   }
