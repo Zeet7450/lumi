@@ -11,15 +11,17 @@ const bridgeUrl = "http://127.0.0.1:3100/state";
 type DemoScenarioContextValue = {
   scenario: DemoScenario;
   role: DemoRole;
+  /** Province of the logged-in officer; undefined for national roles. */
+  sessionProvince?: string;
   setRole: (role: DemoRole) => void;
-  run: (command: DemoCommandInput) => void;
+  run: (command: DemoCommandInput) => DemoScenario;
   publicNotice: PublicDemoNotice | null;
   isReady: boolean;
 };
 
 const DemoScenarioContext = createContext<DemoScenarioContextValue | null>(null);
 
-export function DemoScenarioProvider({ children, sessionRole }: Readonly<{ children: React.ReactNode; sessionRole?: DemoRole }>) {
+export function DemoScenarioProvider({ children, sessionRole, sessionProvince }: Readonly<{ children: React.ReactNode; sessionRole?: DemoRole; sessionProvince?: string }>) {
   const [scenario, setScenario] = useState(initialDemoScenario);
   const [role, setRole] = useState<DemoRole>(sessionRole ?? "SIMULATOR");
   const [isReady, setReady] = useState(false);
@@ -90,6 +92,7 @@ export function DemoScenarioProvider({ children, sessionRole }: Readonly<{ child
   const run = useCallback((command: DemoCommandInput) => {
     const next = applyDemoCommand(scenarioRef.current, { ...command, actor: role } as DemoCommand);
     commit(next);
+    return next;
   }, [commit, role]);
   const chooseRole = useCallback((nextRole: DemoRole) => {
     if (sessionRole && nextRole !== sessionRole) return;
@@ -98,7 +101,7 @@ export function DemoScenarioProvider({ children, sessionRole }: Readonly<{ child
     try { window.localStorage.setItem(roleStorageKey, nextRole); }
     catch { /* Keep the in-memory role usable when persistent browser storage is unavailable. */ }
   }, [sessionRole]);
-  const value = useMemo(() => ({ scenario, role, setRole: chooseRole, run, publicNotice: projectPublicDemoNotice(scenario), isReady }), [scenario, role, chooseRole, run, isReady]);
+  const value = useMemo(() => ({ scenario, role, sessionProvince, setRole: chooseRole, run, publicNotice: projectPublicDemoNotice(scenario), isReady }), [scenario, role, sessionProvince, chooseRole, run, isReady]);
   return <DemoScenarioContext.Provider value={value}>{children}</DemoScenarioContext.Provider>;
 }
 

@@ -8,7 +8,7 @@ import { demoReferencePoint } from "@/lib/demo-locations";
 type MapDetail = "fire" | "haze" | "wind";
 
 const detailCopy: Record<MapDetail, { title: string; body: string }> = {
-  fire: { title: "Titik api sintetis", body: "Titik latihan tetap untuk demonstrasi kebakaran lahan Kalimantan." },
+  fire: { title: "Titik api sintetis", body: "Titik api tetap untuk latihan kebakaran lahan Kalimantan." },
   haze: { title: "Area dampak asap", body: "Lingkaran menunjukkan proyeksi dampak kabut asap dari parameter Simulator." },
   wind: { title: "Arah angin", body: "Garis menunjukkan arah sebaran data uji dari titik api." }
 };

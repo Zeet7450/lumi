@@ -11,10 +11,13 @@ export function LocalDemoLogin({ institutional = false }: Readonly<{ institution
     if (state.destination) window.location.assign(state.destination);
   }, [state.destination]);
   return <form className="local-demo-login" action={action}>
-    <label>Email<input name="email" type="email" autoComplete="username" placeholder="nama@demo.lumi.id" required /></label>
+    <label>Email<input name="email" type="email" autoComplete="username" placeholder="nama@instansi.id" required /></label>
     <label>Kata sandi<input name="password" type="password" autoComplete="current-password" required /></label>
+    <div className="password-row">
+      <a className="password-forgot" href="/ops/login?reset=diminta" onClick={(event) => { event.preventDefault(); window.alert("Reset kata sandi diserahkan ke admin instansi Anda. Hubungi koordinator untuk membuat ulang kredensial."); }}>Lupa kata sandi?</a>
+    </div>
     {state.error ? <p className="error" role="alert">{state.error}</p> : null}
     <button className="button" type="submit" disabled={pending}>{pending ? "Memeriksa…" : "Masuk"}</button>
-    <p className="muted small">{institutional ? "Gunakan akun petugas yang telah disediakan untuk demo lokal." : "Akses ini hanya untuk demo lokal. Tidak ada pendaftaran publik atau akun produksi."}</p>
+    <p className="muted small">{institutional ? "Gunakan akun petugas yang telah disediakan." : "Khusus akun petugas. Tidak ada pendaftaran publik di halaman ini."}</p>
   </form>;
 }

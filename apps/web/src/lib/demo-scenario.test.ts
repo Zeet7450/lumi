@@ -103,6 +103,33 @@ test("simulator controls update the replayable synthetic scenario and its shared
   assert.deepEqual(deserializeDemoScenario(serializeDemoScenario(state)), state);
 });
 
+test("wind speed is a free number clamped to 0-100 and AQI override flows to observation", () => {
+  let state = initialDemoScenario();
+  state = applyDemoCommand(state, { type: "SET_WIND_SPEED", actor: "SIMULATOR", windSpeed: 64 }, at);
+  assert.equal(state.simulation.windSpeed, 64);
+  state = applyDemoCommand(state, { type: "SET_WIND_SPEED", actor: "SIMULATOR", windSpeed: 500 }, at);
+  assert.equal(state.simulation.windSpeed, 100, "wind above 100 clamps to 100");
+  state = applyDemoCommand(state, { type: "SET_AQI", actor: "SIMULATOR", aqi: 231 }, at);
+  assert.equal(state.simulation.aqiOverride, 231);
+  state = applyDemoCommand(state, { type: "SET_AQI", actor: "SIMULATOR", aqi: null }, at);
+  assert.equal(state.simulation.aqiOverride, null, "null clears the override");
+  assert.throws(() => applyDemoCommand(state, { type: "SET_WIND_SPEED", actor: "SIMULATOR", windSpeed: -4 }, at), /0–100/);
+  assert.throws(() => applyDemoCommand(state, { type: "SET_AQI", actor: "SIMULATOR", aqi: 900 }, at), /0–500/);
+});
+
+test("incident classification names the simulator-chosen event", () => {
+  const started = applyDemoCommand(initialDemoScenario(), { type: "CREATE_SCENARIO", actor: "SIMULATOR" }, at);
+  const base = applyDemoCommand(started, { type: "SET_SOURCES", actor: "SIMULATOR", sources: [{ id: "sumber-1", sourcePointId: "pontianak-utara", eventType: "HAZE", customName: "", radiusMeters: 15_000, windDirection: "Tenggara", windSpeed: 30, intensity: 3, isPlaying: true, updatedAt: null }] }, at);
+  assert.equal(base.simulation.fireHazeStatus, "HAZE");
+  assert.equal(base.simulation.windSpeed, 30, "free wind speed survives SET_SOURCES");
+  const verified = applyDemoCommand(base, { type: "VALIDATE_ENVIRONMENT", actor: "DLH" }, at);
+  const classified = applyDemoCommand(verified, { type: "VERIFY_INCIDENT", actor: "BPBD" }, at);
+  assert.match(classified.incident!.classification, /Pencemaran\/kabut asap/);
+  const custom = applyDemoCommand(applyDemoCommand(applyDemoCommand(initialDemoScenario(), { type: "CREATE_SCENARIO", actor: "SIMULATOR" }, at), { type: "SET_SOURCES", actor: "SIMULATOR", sources: [{ id: "sumber-1", sourcePointId: "pontianak-utara", eventType: "CUSTOM", customName: "Ledakan gas Pelabuhan", radiusMeters: 12_000, windDirection: "Barat", windSpeed: 45, intensity: 4, isPlaying: true, updatedAt: null }] }, at), { type: "VALIDATE_ENVIRONMENT", actor: "DLH" }, at);
+  const classifiedCustom = applyDemoCommand(custom, { type: "VERIFY_INCIDENT", actor: "BPBD" }, at);
+  assert.match(classifiedCustom.incident!.classification, /Ledakan gas Pelabuhan/);
+});
+
 test("only Simulator can alter pre-validation controls", () => {
   const state = initialDemoScenario();
   assert.throws(() => applyDemoCommand(state, { type: "SET_WIND_SPEED", actor: "DLH", windSpeed: 28 }, at), /SIMULATOR/);
