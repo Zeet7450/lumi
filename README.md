@@ -2,9 +2,27 @@
 
 > Layanan informasi lingkungan publik untuk warga Indonesia: memantau kualitas udara dan titik api dari kebakaran lahan, lalu menyampaikannya dengan bahasa yang bisa dipahami semua orang.
 
-**Live demo:** _LINK_DEMO_PROD_DISINI_ <!-- diisi setelah deploy production Vercel berhasil -->
+- **Live demo:** [lumi-indonesia.vercel.app](https://lumi-indonesia.vercel.app)
+- **Video demo:** [youtu.be/no9l3AV4_Y0](https://youtu.be/no9l3AV4_Y0) (6 menit 10 detik)
+- **Artikel:** [LUMI: Ketika Data Kebakaran Lahan Tidak Boleh Berhenti di Layar Dashboard](https://bunnies9.wordpress.com/2026/09/29/lumi-penanganan-karhutla/)
 
-[Nama Lomba — isi manual]
+Dibuat untuk **AI HackFest 2026** — tema *Public Service and Security* (IDwebhost × CloudBaik).
+
+## Video Demo
+
+Video demo menunjukkan proses kerja agent **end-to-end**, termasuk bagian environment **VPS AI Hosting** — dashboard dan terminal yang benar-benar dipakai — pada menit **1:50**. Seluruh rekaman diambil dari aplikasi yang berjalan (bukan mockup), dan semua angka serta kasus pada demo ini disimulasikan serta ditandai di layar.
+
+| Bab | Waktu | Isi |
+| --- | --- | --- |
+| 1 | 0:00 | Warga tahu dari rumor |
+| 2 | 0:20 | Tiga celah yang membuat informasi terlambat |
+| 3 | 0:50 | LUMI: satu alur informasi lingkungan |
+| 4 | 1:20 | AI Agent dan arsitekturnya |
+| 5 | 1:50 | **VPS AI Hosting — dashboard & terminal yang benar-benar dipakai** |
+| 6 | 2:50 | Alur lintas instansi: BPBD → DLH → KLH → BNPB |
+| 7 | 4:50 | Warga: peta ISPU dan informasi resmi |
+| 8 | 5:25 | Yang dibangun selanjutnya |
+| 9 | 5:45 | Penutup |
 
 ## Masalah & Solusi
 
