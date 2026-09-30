@@ -6,11 +6,11 @@
 - **Video demo:** [youtu.be/no9l3AV4_Y0](https://youtu.be/no9l3AV4_Y0) (6 menit 10 detik)
 - **Artikel:** [LUMI: Ketika Data Kebakaran Lahan Tidak Boleh Berhenti di Layar Dashboard](https://bunnies9.wordpress.com/2026/09/29/lumi-penanganan-karhutla/)
 
-Dibuat untuk **AI HackFest 2026** — tema *Public Service and Security* (IDwebhost × CloudBaik).
+Dibuat untuk **AI HackFest 2026**, tema *Public Service and Security* (IDwebhost × CloudBaik).
 
 ## Video Demo
 
-Video demo menunjukkan proses kerja agent **end-to-end**, termasuk bagian environment **VPS AI Hosting** — dashboard dan terminal yang benar-benar dipakai — pada menit **1:50**. Seluruh rekaman diambil dari aplikasi yang berjalan (bukan mockup), dan semua angka serta kasus pada demo ini disimulasikan serta ditandai di layar.
+Video demo menunjukkan proses kerja agent **end-to-end**, termasuk bagian environment **VPS AI Hosting** (dashboard dan terminal yang benar-benar dipakai) pada menit **1:50**. Seluruh rekaman diambil dari aplikasi yang berjalan (bukan mockup), dan semua angka serta kasus pada demo ini disimulasikan serta ditandai di layar.
 
 | Bab | Waktu | Isi |
 | --- | --- | --- |
@@ -18,7 +18,7 @@ Video demo menunjukkan proses kerja agent **end-to-end**, termasuk bagian enviro
 | 2 | 0:20 | Tiga celah yang membuat informasi terlambat |
 | 3 | 0:50 | LUMI: satu alur informasi lingkungan |
 | 4 | 1:20 | AI Agent dan arsitekturnya |
-| 5 | 1:50 | **VPS AI Hosting — dashboard & terminal yang benar-benar dipakai** |
+| 5 | 1:50 | **VPS AI Hosting: dashboard & terminal yang benar-benar dipakai** |
 | 6 | 2:50 | Alur lintas instansi: BPBD → DLH → KLH → BNPB |
 | 7 | 4:50 | Warga: peta ISPU dan informasi resmi |
 | 8 | 5:25 | Yang dibangun selanjutnya |
@@ -71,7 +71,7 @@ flowchart TD
   LPJ --> PB
 ```
 
-Di LUMI, kotak **Koordinasi dengan pihak terkait** adalah jalur eskalasi bantuan — termasuk BNPB saat kapasitas BPBD provinsi tidak cukup, dengan serah terima kembali setelahnya. **Kominfo Daerah** dijalankan bersama Diskominfo provinsi, dan setiap langkah di alur ini tercatat sebagai aksi pada kasus sehingga riwayat penanganannya bisa ditelusuri.
+Di LUMI, kotak **Koordinasi dengan pihak terkait** adalah jalur eskalasi bantuan, termasuk BNPB saat kapasitas BPBD provinsi tidak cukup, dengan serah terima kembali setelahnya. **Kominfo Daerah** dijalankan bersama Diskominfo provinsi, dan setiap langkah di alur ini tercatat sebagai aksi pada kasus sehingga riwayat penanganannya bisa ditelusuri.
 
 ## Tech Stack
 
@@ -142,7 +142,7 @@ Nama variable yang dipakai (isi value di `.env.local`, lihat `.env.example` di r
 
 ## Lisensi
 
-Kode LUMI dilisensikan dengan [MIT License](LICENSE): bebas dipakai, diubah, dan dibagikan — termasuk untuk keperluan komersial — selama keterangan hak cipta tetap disertakan.
+Kode LUMI dilisensikan dengan [MIT License](LICENSE): bebas dipakai, diubah, dan dibagikan (termasuk untuk keperluan komersial) selama keterangan hak cipta tetap disertakan.
 
 Dua catatan yang menyertainya:
 
@@ -151,4 +151,4 @@ Dua catatan yang menyertainya:
 
 ---
 
-Dibuat dengan ❤️ oleh Verrel · We love NewJeans 🩷
+Dibuat dengan ❤️ oleh orang-orang cerdas · We love NewJeans 🩷
