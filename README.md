@@ -142,7 +142,12 @@ Nama variable yang dipakai (isi value di `.env.local`, lihat `.env.example` di r
 
 ## Lisensi
 
-[Lisensi — belum ditentukan]
+Kode LUMI dilisensikan dengan [MIT License](LICENSE): bebas dipakai, diubah, dan dibagikan — termasuk untuk keperluan komersial — selama keterangan hak cipta tetap disertakan.
+
+Dua catatan yang menyertainya:
+
+- **Data pada demo ini disimulasikan.** Angka, kasus, dan laporan di aplikasi demo bukan data kejadian nyata.
+- **Data pihak ketiga tetap milik penyedianya.** NASA FIRMS, BMKG, dan data ISPU/SiPongi dipakai sebagai sumber integrasi; lisensi MIT di atas berlaku untuk kode LUMI, bukan untuk data tersebut.
 
 ---
 
