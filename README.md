@@ -42,18 +42,36 @@ LUMI menutup jurang itu dengan satu alur informasi terkoordinasi: sinyal dari ti
 
 ## Alur Sistem
 
+Alur penanganan laporan, dari laporan masuk sampai pemantauan dinyatakan aman. Laporan bisa datang dari warga maupun dari alat pemantauan DLH, lalu melewati verifikasi BPBD sebelum ditindaklanjuti:
+
 ```mermaid
-flowchart LR
-  A[Kasus terdeteksi] --> B[BPBD verifikasi]
-  B --> C[DLH pantau AQI dan sebar informasi]
-  C --> D{Tindak lanjut}
-  D -->|Penanganan selesai| E[Selesai]
-  D -->|Kapasitas tidak cukup| F[Eskalasi ke BNPB]
-  F --> G[BNPB bantu dan serah kembali ke BPBD]
-  G --> E
-  C -.->|Opsional: lapor ke KLH| H[KLH setujui broadcast nasional]
-  H -.-> I[Awareness nasional]
+flowchart TD
+  M(["Mulai"]) --> LW["Laporan warga"]
+  M --> LD["Laporan alat DLH"]
+  LW --> BP["BPBD menerima laporan"]
+  LD --> BP
+  BP --> VL["Verifikasi laporan"]
+  VL --> SV["Sumber verifikasi<br/>• Kerja sama dengan warga<br/>• Tim internal BPBD<br/>• Data dari sistem/perangkat"]
+  SV --> TV{"Terverifikasi?"}
+  TV -->|Tidak| KP["Klarifikasi / Pemeriksaan ulang"]
+  KP --> VL
+  TV -->|Ya| TL["Tinjau ke lapangan"]
+  TL --> PB["Penanganan bencana"]
+  PB --> BB{"Butuh bantuan?"}
+  BB -->|Ya| KPJ["Koordinasi dengan pihak terkait"]
+  BB -->|Tidak| LDH["Lapor ke DLH"]
+  LDH --> DLM["DLH memantau kondisi lingkungan"]
+  DLM --> KOM["Koordinasi dengan Kominfo Daerah"]
+  KOM --> PBM["Pemberitahuan kepada masyarakat"]
+  PBM --> PAN["Pemantauan lanjutan (1–3 hari)"]
+  KPJ --> PAN
+  PAN --> KA{"Kondisi sudah aman?"}
+  KA -->|Ya| SEL(["Selesai"])
+  KA -->|Tidak| LPJ["Lanjut pemantauan dan penanganan"]
+  LPJ --> PB
 ```
+
+Di LUMI, kotak **Koordinasi dengan pihak terkait** adalah jalur eskalasi bantuan — termasuk BNPB saat kapasitas BPBD provinsi tidak cukup, dengan serah terima kembali setelahnya. **Kominfo Daerah** dijalankan bersama Diskominfo provinsi, dan setiap langkah di alur ini tercatat sebagai aksi pada kasus sehingga riwayat penanganannya bisa ditelusuri.
 
 ## Tech Stack
 
